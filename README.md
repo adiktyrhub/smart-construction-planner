@@ -42,3 +42,10 @@ Therefore, there is an opportunity to develop a simple, structured, and interpre
 - To analyze how delays in one activity affect dependent activities.
 - To apply suitable data structures and algorithms such as Trees, Graphs, Priority Queues, Hash Tables, and Queues.
 - To develop a simple, efficient, and interpretable construction resource-planning system.
+
+# 5.Target users
+- Project Managers – plan activities and allocate resources.
+- Site Engineers – monitor activities and resource requirements.
+- Contractors – manage labour, materials, and equipment.
+- Workers – view their working days, attendance, and earned income.
+- Small Construction Firms – use a simple system for project and resource management.
