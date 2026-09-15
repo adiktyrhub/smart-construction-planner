@@ -2,11 +2,10 @@
 
 ## 1. Hasselsteen et al. (2024), “Resource management at modern construction sites: Bridging the gap between scientific knowledge and industry practice and needs.”
 
-<img width="767" height="449" alt="image" src="https://github.com/user-attachments/assets/125e0bd1-9e68-4eee-95a1-5bcdf2f28081" />
+📄 Read Full Paper
 https://www.sciencedirect.com/science/article/pii/S0301479724018218?
 
-The authors did two important things:
-
+### The authors did two important things:
 Systematic literature review — they examined existing research on resource management and resource-consumption reduction at construction sites.
 Interviews with construction practitioners — they interviewed 10 industry practitioners to see whether the solutions proposed by researchers actually work in real construction environments.
 
