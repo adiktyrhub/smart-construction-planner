@@ -33,3 +33,12 @@ Therefore, there is an opportunity to develop a simple, structured, and interpre
 - Our project aims to bridge this gap by combining project structure, activity dependencies, resource availability, and task prioritization in one system.
 - Instead of restricting ourselves to Tree and Graph, we can select different data structures according to the problem, such as Graphs for dependencies, Trees for project hierarchy, Priority Queues for task prioritization, Hash Tables for resource lookup, and Queues for pending activities.
 - The system can provide explainable decisions, such as why an activity is prioritized, why a resource conflict occurs, and which activities may be affected by a delay.
+
+# 4. Objective
+- To organize construction activities and their dependencies efficiently.
+- To manage and allocate limited labour, materials, and equipment.
+- To detect resource conflicts, shortages, and scheduling issues.
+- To prioritize activities and determine an efficient execution order.
+- To analyze how delays in one activity affect dependent activities.
+- To apply suitable data structures and algorithms such as Trees, Graphs, Priority Queues, Hash Tables, and Queues.
+- To develop a simple, efficient, and interpretable construction resource-planning system.
