@@ -11,11 +11,11 @@ Interviews with construction practitioners — they interviewed 10 industry prac
 
 They identified 73 resource-related measures across six categories:
 
-Transport
-Fuel
-Heating
-Electricity
-Water
+Transport,
+Fuel,
+Heating,
+Electricity,
+Water,
 Waste
 
 But the important finding for your project is that there is a gap between what research recommends and what construction companies actually implement. Only 26% of the reviewed studies measured resource consumption directly on construction sites. The authors therefore recommend better on-site monitoring and real-time evaluation for informed decision-making.
