@@ -2,6 +2,8 @@
 
 ## 1. Hasselsteen et al. (2024), “Resource management at modern construction sites: Bridging the gap between scientific knowledge and industry practice and needs.”
 
+<img width="767" height="449" alt="image" src="https://github.com/user-attachments/assets/125e0bd1-9e68-4eee-95a1-5bcdf2f28081" />
+https://www.sciencedirect.com/science/article/pii/S0301479724018218?
 
 The authors did two important things:
 
@@ -19,6 +21,6 @@ Waste
 
 But the important finding for your project is that there is a gap between what research recommends and what construction companies actually implement. Only 26% of the reviewed studies measured resource consumption directly on construction sites. The authors therefore recommend better on-site monitoring and real-time evaluation for informed decision-making.
 
-#Finding
+# Finding
 
 Construction projects consume multiple resources such as labour, materials, equipment, energy, water and transportation. Although numerous resource-management strategies have been proposed in research, their practical implementation at construction sites remains challenging. Existing approaches also have limitations in real-time monitoring and decision-making. Therefore, there is a need for a computational system that can organize project activities, track resource requirements and availability, identify conflicts, and support timely resource-planning decisions.
