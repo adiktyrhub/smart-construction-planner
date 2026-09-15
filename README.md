@@ -1,1 +1,1 @@
-# smart-construction-planner
+# Smart Construction Project Resource Planning System
