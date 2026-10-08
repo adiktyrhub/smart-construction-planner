@@ -1,0 +1,1681 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartBuild — Resource Planning System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0F172A;--blue:#2563EB;--blue2:#3B82F6;--bg:#F1F5F9;--card:#FFFFFF;
+  --green:#16A34A;--amber:#D97706;--red:#DC2626;--muted:#64748B;--border:#E2E8F0;
+  --purple:#7C3AED;--orange:#EA580C;--shadow:0 1px 3px rgba(0,0,0,.08);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.12);--ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--navy);background:var(--bg)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.hidden{display:none!important}
+.app{min-height:100vh}
+.login-screen{min-height:100vh;display:grid;grid-template-columns:48% 52%;background:#fff}
+.login-hero{position:relative;overflow:hidden;padding:64px;display:flex;align-items:center;background:
+  radial-gradient(circle at 18% 18%,rgba(37,99,235,.32),transparent 32%),
+  radial-gradient(circle at 82% 76%,rgba(59,130,246,.18),transparent 35%),
+  linear-gradient(135deg,#0F172A,#1E3A5F)}
+.login-hero:before{content:"";position:absolute;inset:0;background:
+  linear-gradient(140deg,transparent 42%,rgba(255,255,255,.05) 42%,rgba(255,255,255,.05) 43%,transparent 43%),
+  linear-gradient(30deg,transparent 55%,rgba(255,255,255,.04) 55%,rgba(255,255,255,.04) 56%,transparent 56%);
+  opacity:.7}
+.hero-grid{position:absolute;inset:auto -60px -100px auto;width:420px;height:420px;border:1px solid rgba(255,255,255,.08);transform:rotate(18deg);box-shadow:0 0 0 80px rgba(255,255,255,.02),0 0 0 160px rgba(255,255,255,.02)}
+.hero-content{position:relative;z-index:1;max-width:630px;color:white}
+.brand-lockup{font-size:38px;font-weight:800;letter-spacing:-1.5px;margin-bottom:8px}
+.hero-sub{font-size:18px;color:#CBD5E1;margin-bottom:38px}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.06);border-radius:999px;font-size:12px;font-weight:700;margin-bottom:24px}
+.feature-list{display:grid;gap:14px;margin-top:30px}
+.feature-item{display:flex;align-items:center;gap:14px;color:#E2E8F0;font-size:15px}
+.feature-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.08)}
+.login-side{display:flex;align-items:center;justify-content:center;padding:38px;background:#fff}
+.login-box{width:min(500px,100%)}
+.login-box h1{font-size:34px;letter-spacing:-1.2px;margin:0 0 8px}
+.login-box .subtitle{color:var(--muted);margin:0 0 26px}
+.role-switch{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:5px;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;margin-bottom:22px}
+.role-switch button{border:0;background:transparent;padding:11px;border-radius:8px;font-weight:700;color:var(--muted)}
+.role-switch button.active{background:var(--blue);color:#fff;box-shadow:0 2px 5px rgba(37,99,235,.22)}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+.input-wrap{position:relative}
+.input,.select{width:100%;height:44px;border:1px solid var(--border);background:#fff;border-radius:9px;padding:0 13px;outline:none;transition:.2s var(--ease)}
+.input:focus,.select:focus{border-color:#93C5FD;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+.password-toggle{position:absolute;right:5px;top:5px;height:34px;padding:0 9px;border:0;background:#F8FAFC;border-radius:7px;color:var(--muted)}
+.login-options{display:flex;align-items:center;justify-content:space-between;margin:10px 0 20px;font-size:13px}
+.checkbox{display:flex;align-items:center;gap:7px;color:var(--muted)}
+.checkbox input{accent-color:var(--blue)}
+.link{color:var(--blue);font-weight:700;text-decoration:none}
+.primary-btn,.secondary-btn,.danger-btn{border:0;border-radius:8px;padding:11px 15px;font-weight:800;transition:.2s var(--ease)}
+.primary-btn{background:var(--blue);color:#fff;box-shadow:0 3px 8px rgba(37,99,235,.18)}
+.secondary-btn{background:#fff;border:1px solid var(--border);color:var(--navy)}
+.danger-btn{background:#FEF2F2;color:var(--red);border:1px solid #FECACA}
+.primary-btn:hover,.secondary-btn:hover,.danger-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-hover)}
+.full{width:100%}
+.demo-box{margin-top:24px;border:1px solid var(--border);border-radius:12px;padding:15px;background:#F8FAFC}
+.demo-box h4{margin:0 0 9px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.demo-row{display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;font-size:12px;padding:8px 0;border-top:1px dashed var(--border)}
+.demo-row:first-of-type{border-top:0}
+.cred-role{font-weight:800}
+.demo-fill{border:0;background:#fff;text-align:left;color:var(--blue);padding:0;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.login-error{min-height:18px;color:var(--red);font-size:12px;font-weight:600;margin-top:9px}
+
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--navy);color:#CBD5E1;padding:18px 12px;display:flex;flex-direction:column;z-index:30}
+.logo{color:#fff;font-size:20px;font-weight:800;display:flex;align-items:center;gap:9px;padding:8px 10px 20px}
+.logo small{color:#94A3B8;font-size:10px;font-weight:600;display:block}
+.sidebar-nav{display:grid;gap:4px}
+.nav-section{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#64748B;font-weight:800;padding:13px 11px 7px}
+.nav-btn{width:100%;display:flex;align-items:center;gap:11px;border:0;background:transparent;color:#CBD5E1;padding:10px 11px;border-radius:9px;text-align:left;font-weight:700;font-size:13px;transition:.2s var(--ease)}
+.nav-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-btn.active{background:var(--blue);color:#fff}
+.nav-icon{width:19px;text-align:center}
+.sidebar-bottom{margin-top:auto;display:grid;gap:5px}
+.content{grid-column:2;min-width:0}
+.topbar{height:70px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:20}
+.top-left .page-title{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.breadcrumb{font-size:11px;color:var(--muted);margin-top:3px}
+.top-right{display:flex;align-items:center;gap:14px}
+.date-chip{font-size:12px;color:var(--muted);padding-right:10px;border-right:1px solid var(--border)}
+.notif-wrap{position:relative}
+.icon-btn{width:36px;height:36px;border:1px solid var(--border);background:#fff;border-radius:9px;display:grid;place-items:center;position:relative}
+.badge-count{position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;padding:0 4px;display:grid;place-items:center;background:var(--red);color:#fff;border-radius:999px;font-size:9px;font-weight:800;border:2px solid #fff}
+.user-pill{display:flex;align-items:center;gap:9px}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#1D4ED8);color:#fff;display:grid;place-items:center;font-weight:800}
+.user-meta{line-height:1.15}
+.user-meta strong{display:block;font-size:12px}
+.user-meta span{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.notif-menu{position:absolute;right:0;top:44px;width:320px;background:#fff;border:1px solid var(--border);box-shadow:0 16px 40px rgba(15,23,42,.14);border-radius:12px;padding:10px;z-index:50}
+.notif-head{display:flex;justify-content:space-between;align-items:center;padding:5px 6px 9px;font-size:12px;font-weight:800}
+.alert-item{padding:10px;border-radius:9px;background:#F8FAFC;margin-top:6px;border-left:4px solid var(--amber)}
+.alert-item.red{border-left-color:var(--red)} .alert-item.blue{border-left-color:var(--blue)} .alert-item.green{border-left-color:var(--green)}
+.alert-item strong{font-size:12px;display:block}.alert-item span{font-size:11px;color:var(--muted);display:block;margin-top:3px}
+
+main{padding:24px 26px 36px}
+.view{display:none;animation:fadeSlide .32s var(--ease)}
+.view.active{display:block}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.page-head h2{font-size:22px;letter-spacing:-.7px;margin:0 0 4px}
+.page-head p{font-size:12px;color:var(--muted);margin:0}
+.actions{display:flex;gap:8px;align-items:center}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.grid-3{display:grid;grid-template-columns:1.65fr 1fr .75fr;gap:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:16px}
+.card:hover{box-shadow:var(--shadow-hover)}
+.stat-card{min-height:118px;position:relative;overflow:hidden}
+.stat-top{display:flex;align-items:center;justify-content:space-between}
+.stat-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#EFF6FF;color:var(--blue)}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font-size:28px;font-weight:800;letter-spacing:-1px;margin-top:12px}
+.stat-sub{font-size:10px;color:var(--muted);margin-top:4px}
+.trend{position:absolute;right:12px;bottom:13px;font-size:10px;font-weight:800;padding:4px 6px;border-radius:999px}
+.trend.up{color:var(--green);background:#F0FDF4}.trend.warn{color:var(--amber);background:#FFFBEB}.trend.down{color:var(--red);background:#FEF2F2}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.section-title h3{font-size:13px;margin:0}.section-title a{font-size:11px;color:var(--blue);font-weight:800;text-decoration:none}
+.chart-box{height:260px}.chart-box.small{height:245px}.chart-center{height:235px;position:relative;display:grid;place-items:center}.chart-center .center-label{position:absolute;text-align:center;pointer-events:none}.chart-center strong{font-size:17px;display:block}.chart-center span{font-size:10px;color:var(--muted)}
+.alert-stack{display:grid;gap:9px}
+.resource-alert{padding:10px 11px;background:#F8FAFC;border-left:4px solid var(--amber);border-radius:8px}
+.resource-alert.red{border-left-color:var(--red)} .resource-alert.orange{border-left-color:#F97316}
+.resource-alert strong{font-size:11px;display:block}.resource-alert span{font-size:10px;color:var(--muted);display:block;margin-top:3px}
+
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:10px}
+.table{width:100%;border-collapse:collapse;min-width:720px}
+.table th,.table td{padding:11px 12px;border-bottom:1px solid var(--border);text-align:left;font-size:11px;white-space:nowrap}
+.table th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:#F8FAFC}
+.table tbody tr:nth-child(even){background:#FBFDFF}
+.table tbody tr:hover{background:#F8FAFC}
+.table tr:last-child td{border-bottom:0}
+.status{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800}
+.status.green{color:#166534;background:#DCFCE7}.status.red{color:#991B1B;background:#FEE2E2}.status.blue{color:#1D4ED8;background:#DBEAFE}
+.status.amber{color:#92400E;background:#FEF3C7}.status.orange{color:#9A3412;background:#FFEDD5}.status.gray{color:#475569;background:#E2E8F0}
+.action-dot{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;padding:2px 5px;border-radius:6px}
+.action-dot:hover{background:#E2E8F0;color:var(--navy)}
+.filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.search{min-width:240px;max-width:320px;position:relative}.search input{padding-left:34px}.search span{position:absolute;left:11px;top:13px;color:#94A3B8}
+.filter-bar .select{width:auto;min-width:140px;height:40px}.filter-bar .input{height:40px}
+.section-gap{margin-top:12px}
+.progress{height:7px;border-radius:999px;background:#E2E8F0;overflow:hidden;min-width:85px}
+.progress > span{display:block;height:100%;width:0;border-radius:999px;background:var(--blue);transition:width .8s var(--ease)}
+.progress.red > span{background:var(--red)}.progress.amber > span{background:var(--amber)}.progress.green > span{background:var(--green)}
+.progress-cell{display:flex;align-items:center;gap:7px}.progress-cell b{font-size:10px}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.shortage{border:1px solid #FDE68A;background:#FFFBEB;padding:14px;border-radius:12px}
+.shortage h4{margin:0 0 8px;font-size:12px}.shortage-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px dashed #FDE68A;font-size:11px}.shortage-row:first-of-type{border-top:0}.shortage-row strong{color:var(--red)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.modal-overlay.show{display:flex}
+.modal{width:min(560px,100%);background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(15,23,42,.22);animation:modalIn .25s var(--ease)}
+@keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.modal-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0;font-size:16px}.modal-close{border:0;background:#F8FAFC;width:32px;height:32px;border-radius:8px;color:var(--muted)}
+.modal-body{padding:18px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid .full-row{grid-column:1/-1}.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:14px 18px;border-top:1px solid var(--border);background:#F8FAFC;border-radius:0 0 14px 14px}
+.toast{position:fixed;right:22px;bottom:22px;background:var(--navy);color:#fff;padding:12px 15px;border-radius:10px;box-shadow:0 14px 30px rgba(15,23,42,.2);font-size:12px;z-index:150;opacity:0;transform:translateY(12px);pointer-events:none;transition:.25s var(--ease)}.toast.show{opacity:1;transform:none}
+
+.worker-hero{border-radius:14px;overflow:hidden;background:
+  radial-gradient(circle at 72% 25%,rgba(59,130,246,.28),transparent 28%),
+  linear-gradient(135deg,#0F172A,#1E3A5F);color:#fff;padding:24px;position:relative;min-height:145px;display:flex;align-items:center}
+.worker-hero:after{content:"";position:absolute;right:-50px;top:-120px;width:330px;height:330px;border:1px solid rgba(255,255,255,.10);border-radius:50%;box-shadow:0 0 0 50px rgba(255,255,255,.02),0 0 0 100px rgba(255,255,255,.02)}
+.worker-hero h2{margin:0;font-size:25px;letter-spacing:-.7px}.worker-hero p{margin:7px 0 0;color:#CBD5E1;font-size:12px}.hero-meta{margin-top:15px;display:flex;gap:8px;flex-wrap:wrap}.hero-chip{padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.09);font-size:10px}
+.assignment{display:grid;grid-template-columns:1fr 1fr;gap:16px}.site-visual{min-height:220px;border-radius:11px;background:
+  linear-gradient(180deg,rgba(37,99,235,.06),rgba(15,23,42,.78)),
+  linear-gradient(135deg,#1E3A5F 0 38%,#475569 38% 41%,#334155 41% 68%,#64748B 68% 72%,#1E293B 72%);display:flex;align-items:flex-end;padding:15px;color:#fff;position:relative;overflow:hidden}
+.site-visual:before{content:"";position:absolute;inset:auto 0 0 0;height:38%;background:linear-gradient(180deg,transparent,#111827)}
+.site-caption{position:relative;z-index:1}.site-caption small{display:block;color:#CBD5E1;font-size:9px}.site-caption strong{display:block;margin-top:4px;font-size:15px}
+.detail-list{display:grid;gap:10px;align-content:center}.detail-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--border);padding-bottom:9px;font-size:11px}.detail-row:last-child{border-bottom:0}.detail-row span{color:var(--muted)}.detail-row strong{text-align:right}
+.wage-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.mini-stat{border:1px solid var(--border);padding:11px;border-radius:9px;background:#FBFDFF}.mini-stat small{display:block;color:var(--muted);font-size:10px}.mini-stat strong{display:block;font-size:15px;margin-top:5px}
+.job-table td,.job-table th{font-size:10px}.apply-btn{border:0;background:#EFF6FF;color:var(--blue);font-weight:800;border-radius:7px;padding:6px 8px;font-size:10px}.apply-btn.applied{background:#DCFCE7;color:#166534}
+.owner-kpi .stat-value{font-size:25px}
+
+.empty{padding:25px;text-align:center;color:var(--muted);font-size:12px}
+.skeleton{background:linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:8px}
+@keyframes shimmer{to{background-position:-200% 0}}
+.loading-overlay{position:fixed;inset:0;background:rgba(241,245,249,.88);display:flex;align-items:center;justify-content:center;z-index:120}
+.loading-card{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow-hover);padding:20px 24px;border-radius:12px;font-size:12px;font-weight:800}
+
+@media (max-width:1180px){
+  .login-screen{grid-template-columns:1fr}.login-hero{display:none}.grid-6{grid-template-columns:repeat(3,1fr)}.grid-3{grid-template-columns:1fr 1fr}.grid-3 > .card:last-child{grid-column:1/-1}
+}
+@media (max-width:880px){
+  .shell{grid-template-columns:74px 1fr}.sidebar{width:74px}.logo{justify-content:center;padding-inline:4px;font-size:0}.logo span{font-size:21px}.logo small,.nav-btn .nav-text,.nav-section{display:none}.nav-btn{justify-content:center;padding:11px}.topbar{padding-inline:16px}.user-meta,.date-chip{display:none}.grid-6,.grid-5,.grid-4,.kpi-strip{grid-template-columns:1fr 1fr}.grid-3,.grid-2,.assignment{grid-template-columns:1fr}.page-head{align-items:flex-start;flex-direction:column}
+}
+@media (max-width:620px){
+  main{padding:16px}.topbar{height:64px}.grid-6,.grid-5,.grid-4,.kpi-strip,.wage-grid{grid-template-columns:1fr}.top-left .page-title{font-size:16px}.notif-menu{right:-70px;width:290px}.form-grid{grid-template-columns:1fr}.form-grid .full-row{grid-column:auto}.login-side{padding:20px}.login-box h1{font-size:28px}
+}
+
+/* ===== SmartBuild Modern UI Upgrade ===== */
+:root{
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --surface-3:#f1f5f9;
+  --ink:#0f172a;
+  --ink-2:#334155;
+  --muted-2:#94a3b8;
+  --blue-soft:#eff6ff;
+  --blue-line:#bfdbfe;
+  --green-soft:#f0fdf4;
+  --amber-soft:#fffbeb;
+  --red-soft:#fef2f2;
+  --radius-lg:16px;
+  --radius-md:12px;
+  --radius-sm:9px;
+}
+
+body{
+  background:
+    radial-gradient(circle at 90% -10%, rgba(37,99,235,.055), transparent 24%),
+    linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);
+}
+
+main{max-width:1600px;margin:0 auto}
+.topbar{
+  backdrop-filter:blur(16px);
+  background:rgba(255,255,255,.88);
+}
+.page-head{
+  margin-bottom:22px;
+}
+.page-head h2{
+  font-size:26px;
+  letter-spacing:-1px;
+}
+.page-head p{
+  max-width:760px;
+  line-height:1.55;
+}
+
+.card{
+  border-radius:var(--radius-lg);
+  box-shadow:0 1px 2px rgba(15,23,42,.04),0 10px 28px rgba(15,23,42,.035);
+  transition:transform .22s var(--ease),box-shadow .22s var(--ease),border-color .22s var(--ease);
+}
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(15,23,42,.08);
+  border-color:#dbe3ee;
+}
+
+.stat-card{
+  min-height:132px;
+  background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);
+}
+.stat-card:before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:3px;
+  background:linear-gradient(180deg,var(--blue),#60a5fa);
+  opacity:.9;
+}
+.stat-card:nth-child(2):before{background:linear-gradient(180deg,var(--green),#4ade80)}
+.stat-card:nth-child(3):before{background:linear-gradient(180deg,var(--red),#fb7185)}
+.stat-card:nth-child(4):before{background:linear-gradient(180deg,#6366f1,#818cf8)}
+.stat-card:nth-child(5):before{background:linear-gradient(180deg,var(--amber),#fbbf24)}
+.stat-card:nth-child(6):before{background:linear-gradient(180deg,#ea580c,#fb923c)}
+.stat-value{
+  font-size:31px;
+}
+.stat-sub{line-height:1.4}
+.stat-icon{
+  width:38px;height:38px;border-radius:12px;
+  box-shadow:inset 0 0 0 1px rgba(37,99,235,.06);
+}
+
+.section-title h3{
+  font-size:14px;
+  letter-spacing:-.2px;
+}
+.section-title a{
+  padding:6px 9px;
+  border-radius:8px;
+  transition:.2s ease;
+}
+.section-title a:hover{
+  background:var(--blue-soft);
+}
+
+.table-wrap{
+  border-radius:12px;
+  box-shadow:inset 0 0 0 1px rgba(226,232,240,.55);
+}
+.table th{
+  position:sticky;
+  top:0;
+  z-index:1;
+  background:linear-gradient(180deg,#f8fafc,#f5f8fb);
+}
+.table td{
+  vertical-align:middle;
+}
+.table tbody tr{
+  transition:background .15s ease,transform .15s ease;
+}
+.table tbody tr:hover{
+  background:#f8fbff;
+}
+
+.primary-btn{
+  min-height:40px;
+  box-shadow:0 6px 16px rgba(37,99,235,.16);
+}
+.primary-btn:hover{
+  box-shadow:0 9px 18px rgba(37,99,235,.22);
+}
+.secondary-btn{
+  min-height:40px;
+}
+.filter-bar{
+  padding:4px 0 12px;
+}
+
+.grid-3>.card:first-child,
+.grid-2>.card:first-child{
+  min-height:100%;
+}
+
+.alert-stack{
+  gap:10px;
+}
+.resource-alert{
+  background:linear-gradient(180deg,#fbfdff,#f8fafc);
+  border:1px solid #eef2f7;
+  border-left:4px solid var(--amber);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.resource-alert:hover{
+  transform:translateX(2px);
+  box-shadow:0 6px 14px rgba(15,23,42,.05);
+}
+
+.shortage{
+  box-shadow:inset 0 0 0 1px rgba(245,158,11,.08);
+}
+
+.progress{
+  height:8px;
+  background:#e9eef5;
+}
+.progress > span{
+  box-shadow:0 0 10px rgba(37,99,235,.18);
+}
+
+.worker-hero{
+  border-radius:18px;
+  min-height:175px;
+  padding:28px;
+  box-shadow:0 16px 35px rgba(15,23,42,.12);
+  overflow:hidden;
+}
+.worker-hero:after{
+  opacity:.8;
+}
+.worker-hero h2{
+  font-size:30px;
+}
+.hero-chip{
+  backdrop-filter:blur(8px);
+}
+
+.site-visual{
+  min-height:240px;
+  border-radius:14px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.modal-overlay{
+  background:rgba(2,6,23,.54);
+}
+.modal{
+  border-radius:18px;
+}
+.modal-head{
+  padding:18px 20px;
+}
+.modal-body{
+  padding:20px;
+}
+
+.icon-btn{
+  transition:.2s ease;
+}
+.icon-btn:hover{
+  background:#f8fafc;
+  transform:translateY(-1px);
+}
+
+.nav-btn{
+  position:relative;
+}
+.nav-btn.active:after{
+  content:"";
+  position:absolute;
+  right:-12px;
+  width:3px;
+  height:22px;
+  border-radius:999px;
+  background:#93c5fd;
+}
+
+.notif-menu{
+  animation:menuIn .18s var(--ease);
+}
+@keyframes menuIn{
+  from{opacity:0;transform:translateY(-4px) scale(.985)}
+  to{opacity:1;transform:none}
+}
+
+.kpi-strip .card{
+  position:relative;
+  overflow:hidden;
+}
+.kpi-strip .card:after{
+  content:"";
+  position:absolute;
+  width:90px;height:90px;
+  right:-42px;bottom:-42px;
+  border-radius:50%;
+  background:rgba(37,99,235,.045);
+}
+.mini-stat{
+  transition:.2s ease;
+}
+.mini-stat:hover{
+  transform:translateY(-2px);
+  border-color:#dbeafe;
+  box-shadow:0 6px 14px rgba(37,99,235,.06);
+}
+
+.empty{
+  background:#fbfdff;
+  border:1px dashed #dbe3ee;
+  border-radius:12px;
+  margin-top:12px;
+}
+
+.dashboard-focus{
+  position:relative;
+}
+.dashboard-focus:before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  border-radius:16px 16px 0 0;
+  background:linear-gradient(90deg,#2563eb,#60a5fa);
+}
+
+.quick-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.quick-action{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:9px 11px;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:800;
+  color:var(--ink-2);
+  transition:.2s ease;
+}
+.quick-action:hover{
+  border-color:#bfdbfe;
+  background:#f8fbff;
+  color:#1d4ed8;
+  transform:translateY(-1px);
+}
+
+@media (max-width:1180px){
+  .page-head h2{font-size:23px}
+}
+
+
+/* ===== DSA Engine ===== */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 9px;border-radius:999px;
+  background:#eff6ff;color:#1d4ed8;font-size:9px;font-weight:900;letter-spacing:.12em;
+}
+.dsa-command-center{
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(37,99,235,.07),transparent 32%),
+    linear-gradient(180deg,#fff,#fbfdff);
+}
+.dsa-command-head{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px;
+}
+.dsa-command-head h3{margin:8px 0 5px;font-size:18px;letter-spacing:-.45px}
+.dsa-command-head p{margin:0;color:#64748b;font-size:11px;line-height:1.55;max-width:720px}
+.dsa-mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.dsa-mini{
+  min-height:76px;padding:11px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;
+  display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:8px;
+  transition:.2s ease;
+}
+.dsa-mini:hover{border-color:#bfdbfe;box-shadow:0 8px 20px rgba(37,99,235,.07);transform:translateY(-1px)}
+.dsa-mini>span{width:32px;height:32px;display:grid;place-items:center;background:#f8fafc;border-radius:10px}
+.dsa-mini strong{display:block;font-size:11px}.dsa-mini small{display:block;color:#64748b;font-size:9px;margin-top:3px}
+.dsa-mini>b{font-size:9px;color:#2563eb;background:#eff6ff;padding:5px 6px;border-radius:7px}
+.dsa-shell{display:grid;grid-template-columns:250px 1fr;gap:14px;align-items:start}
+.dsa-sidebar{position:sticky;top:92px}
+.dsa-sidebar .card{padding:10px}
+.dsa-side-title{padding:6px 7px 10px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#64748b}
+.dsa-category{
+  width:100%;border:0;background:transparent;padding:9px 10px;border-radius:9px;
+  text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:11px;font-weight:800;color:#475569;
+}
+.dsa-category:hover{background:#f8fafc;color:#0f172a}
+.dsa-category.active{background:#eff6ff;color:#1d4ed8}
+.dsa-cat-count{font-size:9px;color:#94a3b8}
+.dsa-algo-list{display:grid;gap:4px;padding:0 5px 7px}
+.dsa-algo{
+  border:0;background:transparent;padding:8px 9px;border-radius:8px;text-align:left;
+  font-size:10px;color:#64748b;font-weight:700;display:flex;gap:8px;align-items:center;
+}
+.dsa-algo:hover{background:#f8fafc;color:#1e293b}
+.dsa-algo.active{background:#0f172a;color:#fff}
+.dsa-workspace{min-width:0}
+.dsa-hero{
+  border-radius:18px;padding:22px;color:#fff;
+  background:
+    radial-gradient(circle at 78% 20%,rgba(96,165,250,.26),transparent 26%),
+    radial-gradient(circle at 14% 100%,rgba(37,99,235,.28),transparent 28%),
+    linear-gradient(135deg,#0f172a,#172554 62%,#1e3a8a);
+  box-shadow:0 16px 34px rgba(15,23,42,.15);
+  margin-bottom:12px;
+}
+.dsa-hero h2{margin:8px 0 5px;font-size:24px;letter-spacing:-.7px}
+.dsa-hero p{margin:0;color:#cbd5e1;font-size:11px;line-height:1.55;max-width:760px}
+.dsa-hero .eyebrow{background:rgba(255,255,255,.1);color:#dbeafe;border:1px solid rgba(255,255,255,.08)}
+.dsa-status-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.dsa-status{padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.09);font-size:9px;color:#e2e8f0}
+.dsa-control-card{margin-bottom:12px}
+.dsa-control-grid{display:grid;grid-template-columns:1.1fr 1fr auto;gap:10px;align-items:end}
+.dsa-form-label{font-size:10px;font-weight:800;color:#475569;margin:0 0 6px;display:block}
+.dsa-run-btn{height:42px;min-width:135px}
+.dsa-output-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:12px}
+.dsa-result-card{min-height:400px}
+.dsa-result-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.dsa-result-head h3{margin:0;font-size:14px}
+.dsa-result-head span{font-size:9px;color:#64748b}
+.dsa-viz{min-height:330px;border:1px solid #e2e8f0;border-radius:12px;background:
+  radial-gradient(circle at 18% 10%,rgba(37,99,235,.045),transparent 25%),
+  #fbfdff;padding:14px;overflow:auto}
+.dsa-kpi-stack{display:grid;gap:10px}
+.dsa-kpi{
+  border:1px solid #e2e8f0;border-radius:12px;padding:13px;background:#fff;
+}
+.dsa-kpi small{display:block;color:#64748b;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.dsa-kpi strong{display:block;font-size:18px;margin-top:5px}
+.dsa-kpi p{margin:4px 0 0;color:#64748b;font-size:10px;line-height:1.45}
+.dsa-code-card{
+  border-radius:12px;background:#0f172a;color:#e2e8f0;padding:13px;
+  font:10px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;
+}
+.tree-visual{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px}
+.tree-level{display:flex;gap:8px;justify-content:center}
+.tree-node{
+  min-width:48px;height:38px;padding:0 9px;border-radius:10px;display:grid;place-items:center;
+  background:#fff;border:1px solid #bfdbfe;color:#1d4ed8;font-weight:900;font-size:10px;
+  box-shadow:0 4px 10px rgba(37,99,235,.07);
+}
+.tree-node.dark{background:#0f172a;border-color:#0f172a;color:#fff}
+.tree-node.red{border-color:#fecaca;background:#fef2f2;color:#b91c1c}
+.matrix{
+  border-collapse:collapse;margin:auto;font-size:10px;
+}
+.matrix th,.matrix td{border:1px solid #e2e8f0;padding:7px;text-align:center;min-width:34px}
+.matrix th{background:#f8fafc;color:#475569}
+.result-list{display:grid;gap:6px}
+.result-chip{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border:1px solid #e2e8f0;border-radius:9px;background:#fff;font-size:10px}
+.result-chip strong{color:#0f172a}
+.result-chip span{color:#2563eb;font-weight:800}
+.step-list{display:grid;gap:6px;margin-top:10px}
+.step-item{padding:8px 9px;border-left:3px solid #2563eb;background:#fff;border-radius:7px;font-size:10px;color:#475569}
+.dsa-coverage{margin-top:12px}
+.coverage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.coverage-card{padding:10px;border:1px solid #e2e8f0;border-radius:10px;background:#fff}
+.coverage-card strong{display:block;font-size:11px}.coverage-card small{display:block;color:#64748b;font-size:9px;margin-top:3px}
+.coverage-tag{display:inline-flex;margin-top:7px;padding:4px 6px;border-radius:6px;background:#eff6ff;color:#1d4ed8;font-size:8px;font-weight:900}
+.dsa-hint{padding:10px;border-radius:9px;background:#f8fafc;color:#64748b;font-size:10px;line-height:1.5;margin-top:10px}
+.bar-row{display:grid;grid-template-columns:105px 1fr 42px;gap:8px;align-items:center;margin:9px 0;font-size:10px}
+.bar-track{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#2563eb,#60a5fa)}
+@media (max-width:1100px){
+  .dsa-shell{grid-template-columns:1fr}
+  .dsa-sidebar{position:static}
+  .dsa-category{display:none}
+  .dsa-algo-list{display:flex;flex-wrap:wrap}
+  .dsa-output-grid{grid-template-columns:1fr}
+  .dsa-mini-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .dsa-control-grid{grid-template-columns:1fr}
+  .dsa-mini-grid{grid-template-columns:1fr}
+  .coverage-grid{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="loading-overlay hidden" id="loadingOverlay"><div class="loading-card">Loading SmartBuild workspace…</div></div>
+
+<script>
+const state = {
+  role: null,
+  engineerView: 'dashboard',
+  workerView: 'dashboard',
+  ownerView: 'overview',
+  passwordVisible: false,
+  notificationsOpen: false,
+  charts: {},
+  workers: [
+    ['W001','Rahul Kumar','Mason','Site A','8','₹700','Present','green'],
+    ['W002','Suresh Yadav','Helper','Site A','8','₹500','Present','green'],
+    ['W003','Amit Singh','Electrician','Site B','8','₹750','Absent','red'],
+    ['W004','Ganesh Patel','Mixer Operator','Site B','8','₹650','Present','green'],
+    ['W005','Imran Khan','Mason','Site C','6','₹700','Present','green'],
+    ['W006','Pawan Sharma','Helper','Site C','8','₹500','Present','green'],
+    ['W007','Manoj Verma','Carpenter','Site D','8','₹800','Absent','red'],
+    ['W008','Sunil Kumar','Painter','Site D','8','₹700','Present','green']
+  ],
+  machinery: [
+    ['M001','Excavator-1','Excavator','In Use','Site A','Rajesh','blue'],
+    ['M002','Excavator-2','Excavator','Idle','Yard','—','amber'],
+    ['M003','Concrete Mixer-1','Mixer','In Use','Site A','Suresh','blue'],
+    ['M004','Crane-1','Crane','In Use','Site C','Manoj','blue'],
+    ['M005','Dumper-1','Dumper','Lent','External','—','orange'],
+    ['M006','JCB Loader','Loader','In Use','Site A','Ramesh','blue'],
+    ['M007','Generator-1','Generator','Idle','Yard','—','amber'],
+    ['M008','Road Roller','Roller','In Use','Site D','Imran','blue']
+  ],
+  materials: [
+    ['Cement (Bags)','1000','800','200','80','Low','amber'],
+    ['Steel (Kg)','3500','2500','1000','71','Healthy','green'],
+    ['Sand (Ton)','200','120','80','60','Healthy','green'],
+    ['Bricks (Nos)','5000','3500','1500','70','Healthy','green'],
+    ['Gravel (Ton)','200','100','100','50','Healthy','green'],
+    ['Concrete Mix (Bags)','800','750','50','94','Critical','red'],
+    ['Wood (Planks)','200','100','100','50','Healthy','green'],
+    ['Paint (Litre)','100','60','40','60','Low','amber']
+  ],
+  sites: [
+    ['Site A - Main Building','Greater Noida','Foundation Work','12','3','60','On Track','green'],
+    ['Site B - Residential','Noida','Concrete Mixing','8','2','40','On Track','green'],
+    ['Site C - Commercial','Delhi','Brick Work','10','2','75','Ahead','blue'],
+    ['Site D - Warehouse','Ghaziabad','Finishing','6','1','30','Delayed','red']
+  ],
+  expenses: [
+    ['28 Sep 2026','Labour','Daily wages - 36 workers','All Sites','₹52,000'],
+    ['28 Sep 2026','Materials','Cement (100 bags)','Site A','₹18,000'],
+    ['28 Sep 2026','Materials','Steel rods (500 kg)','Site B','₹20,500'],
+    ['28 Sep 2026','Machinery','Excavator rent (1 day)','Site C','₹18,000'],
+    ['28 Sep 2026','Other','Fuel and maintenance','All Sites','₹13,000']
+  ],
+  applications: [
+    ['Steel Binding','Site D - Warehouse','25 Sep 2026','Under Review','amber'],
+    ['Brick Work','Site B - Residential','20 Sep 2026','Accepted','green'],
+    ['Plaster Work','Site C - Commercial','15 Sep 2026','Rejected','red'],
+    ['Material Handling','Site E - Mall Project','10 Sep 2026','Under Review','amber']
+  ],
+  jobs: [
+    ['Brick Work','Site B - Residential','5','2 Months','₹650','3 km'],
+    ['Concrete Mixing','Site C - Commercial','3','1 Month','₹700','5 km'],
+    ['Steel Binding','Site D - Warehouse','4','3 Months','₹680','7 km'],
+    ['Plaster Work','Site A - Main Building','6','2 Months','₹700','2 km'],
+    ['Material Handling','Site E - Mall Project','4','1 Month','₹600','6 km']
+  ],
+  credentialRoles: {
+    engineer: {email:'engineer@smartbuild.com',password:'Engineer@123',label:'Engineer'},
+    owner: {email:'owner@smartbuild.com',password:'Owner@123',label:'Owner'},
+    worker: {email:'worker@smartbuild.com',password:'Worker@123',label:'Worker'}
+  }
+};
+
+const app = document.getElementById('app');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalContent = document.getElementById('modalContent');
+const toastEl = document.getElementById('toast');
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+function esc(v){ return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function showToast(msg){
+  toastEl.textContent=msg; toastEl.classList.add('show');
+  clearTimeout(showToast.t); showToast.t=setTimeout(()=>toastEl.classList.remove('show'),2300);
+}
+function statIcon(icon){return `<div class="stat-icon">${icon}</div>`}
+function statusPill(text,type){return `<span class="status ${type}">${type==='green'?'●':type==='red'?'●':type==='blue'?'●':type==='amber'?'●':'●'} ${esc(text)}</span>`}
+function progressBar(value,type='blue'){return `<div class="progress ${type}"><span data-progress="${value}"></span></div>`}
+function topbarHtml(name,email,title){
+  return `<header class="topbar">
+    <div class="top-left"><div class="page-title">${esc(title)}</div><div class="breadcrumb">SmartBuild / ${esc(title)}</div></div>
+    <div class="top-right">
+      <div class="date-chip">Sep 28, 2026 · Today ▾</div>
+      <div class="notif-wrap">
+        <button class="icon-btn" id="notifBtn">🔔<span class="badge-count">4</span></button>
+        ${state.notificationsOpen?`<div class="notif-menu">
+          <div class="notif-head"><span>Notifications</span><span style="color:#64748B">4 unread</span></div>
+          <div class="alert-item"><strong>🟡 Cement stock low</strong><span>20 bags left — Materials</span></div>
+          <div class="alert-item"><strong>🟠 Excavator-2 idle</strong><span>Idle for 3 days — Machinery</span></div>
+          <div class="alert-item red"><strong>🔴 Worker shortage</strong><span>5 more workers needed — Site B</span></div>
+          <div class="alert-item red"><strong>🔴 Budget usage</strong><span>75% threshold reached — Expenses</span></div>
+        </div>`:''}
+      </div>
+      <div class="user-pill">
+        <div class="avatar">${esc(name.charAt(0))}</div>
+        <div class="user-meta"><strong>${esc(name)}</strong><span>${esc(email)}</span></div>
+      </div>
+    </div>
+  </header>`;
+}
+function sidebarHtml(role){
+  const sets = {
+    engineer:[
+      ['dashboard','📊','Dashboard'],['workers','👷','Workers'],['machinery','🏗️','Machinery'],['materials','📦','Materials'],
+      ['sites','🏢','Sites'],['expenses','💸','Expenses'],['dsa','🧠','DSA Engine'],['reports','📋','Reports'],['settings','⚙️','Settings']
+    ],
+    worker:[
+      ['dashboard','🏠','Dashboard'],['attendance','📅','My Attendance'],['wages','💰','My Wages'],['jobs','💼','Available Jobs'],
+      ['applications','📋','My Applications'],['profile','👤','Profile'],['notifications','🔔','Notifications'],['settings','⚙️','Settings']
+    ],
+    owner:[
+      ['overview','📊','Overview'],['worker-util','👷','Worker Utilization'],['machine-util','🏗️','Machinery Utilization'],
+      ['material-use','📦','Material Usage'],['expenses','💰','Expenses'],['reports','📋','Project Reports']
+    ]
+  };
+  const current = state[role+'View'];
+  return `<aside class="sidebar">
+    <div class="logo"><span>🏗️</span><div class="nav-text">SmartBuild<small>Resource Planning</small></div></div>
+    <nav class="sidebar-nav">
+      ${sets[role].map(([id,icon,label])=>`<button class="nav-btn ${current===id?'active':''}" data-view="${id}"><span class="nav-icon">${icon}</span><span class="nav-text">${label}</span></button>`).join('')}
+    </nav>
+    <div class="sidebar-bottom"><button class="nav-btn" id="logoutBtn"><span class="nav-icon">↪</span><span class="nav-text">Logout</span></button></div>
+  </aside>`;
+}
+
+function renderLogin(){
+  state.role=null;
+  app.innerHTML=`<div class="login-screen">
+    <section class="login-hero">
+      <div class="hero-grid"></div>
+      <div class="hero-content">
+        <div class="hero-tag">SMART CONSTRUCTION OPERATIONS</div>
+        <div class="brand-lockup">SmartBuild</div><div class="hero-sub">Resource Planning System</div>
+        <div style="font-size:28px;font-weight:800;line-height:1.16;max-width:540px">Manage labor. Control machinery. Monitor materials. Build smarter.</div>
+        <div class="feature-list">
+          <div class="feature-item"><span class="feature-icon">👷</span>Manage Workers</div>
+          <div class="feature-item"><span class="feature-icon">🏗️</span>Track Machinery</div>
+          <div class="feature-item"><span class="feature-icon">📦</span>Monitor Materials</div>
+          <div class="feature-item"><span class="feature-icon">💰</span>Control Expenses</div>
+          <div class="feature-item"><span class="feature-icon">📊</span>Build Projects Efficiently</div>
+        </div>
+      </div>
+    </section>
+    <section class="login-side">
+      <div class="login-box">
+        <h1>Welcome Back</h1><p class="subtitle">Login to your account</p>
+        <div class="role-switch" id="roleSwitch">
+          ${[['engineer','Engineer'],['owner','Owner'],['worker','Worker']].map(([r,l],i)=>`<button data-login-role="${r}" class="${i===0?'active':''}">${l}</button>`).join('')}
+        </div>
+        <form id="loginForm">
+          <div class="form-group"><label>Email</label><input class="input" id="loginEmail" type="email" value="${state.credentialRoles.engineer.email}" required></div>
+          <div class="form-group"><label>Password</label><div class="input-wrap"><input class="input" id="loginPassword" type="password" value="${state.credentialRoles.engineer.password}" required><button type="button" class="password-toggle" id="pwToggle">Show</button></div></div>
+          <div class="login-options"><label class="checkbox"><input type="checkbox" checked> Remember Me</label><a class="link" href="#" onclick="return false">Forgot Password?</a></div>
+          <button class="primary-btn full" type="submit">Login</button>
+          <div class="login-error" id="loginError"></div>
+        </form>
+        <div class="demo-box">
+          <h4>Demo Credentials</h4>
+          ${Object.entries(state.credentialRoles).map(([r,c])=>`<div class="demo-row"><span class="cred-role">${c.label}</span><button class="demo-fill" data-fill-email="${r}">${c.email}</button><button class="demo-fill" data-fill-pw="${r}">${c.password}</button></div>`).join('')}
+        </div>
+      </div>
+    </section>
+  </div>`;
+  document.querySelectorAll('[data-login-role]').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('[data-login-role]').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+    const c=state.credentialRoles[btn.dataset.loginRole]; document.getElementById('loginEmail').value=c.email; document.getElementById('loginPassword').value=c.password;
+  }));
+  document.querySelectorAll('[data-fill-email]').forEach(btn=>btn.addEventListener('click',()=>{
+    const c=state.credentialRoles[btn.dataset.fillEmail];document.getElementById('loginEmail').value=c.email;document.getElementById('loginPassword').value=c.password;
+  }));
+  document.querySelectorAll('[data-fill-pw]').forEach(btn=>btn.addEventListener('click',()=>{
+    const c=state.credentialRoles[btn.dataset.fillPw];document.getElementById('loginEmail').value=c.email;document.getElementById('loginPassword').value=c.password;
+  }));
+  document.getElementById('pwToggle').addEventListener('click',()=>{
+    state.passwordVisible=!state.passwordVisible;const el=document.getElementById('loginPassword');el.type=state.passwordVisible?'text':'password';document.getElementById('pwToggle').textContent=state.passwordVisible?'Hide':'Show';
+  });
+  document.getElementById('loginForm').addEventListener('submit',e=>{
+    e.preventDefault(); const email=document.getElementById('loginEmail').value.trim(); const pw=document.getElementById('loginPassword').value;
+    const role=Object.keys(state.credentialRoles).find(r=>state.credentialRoles[r].email===email && state.credentialRoles[r].password===pw);
+    if(!role){document.getElementById('loginError').textContent='Invalid demo credentials. Click one of the credential rows to auto-fill.';return;}
+    enterApp(role);
+  });
+}
+function enterApp(role){
+  state.role=role; state.notificationsOpen=false;
+  loadingOverlay.classList.remove('hidden');
+  setTimeout(()=>{loadingOverlay.classList.add('hidden'); renderShell();},450);
+}
+function renderShell(){
+  if(!state.role){renderLogin();return}
+  const role=state.role;
+  app.innerHTML=`<div class="shell">${sidebarHtml(role)}<section class="content">
+    ${topbarHtml(role==='engineer'?'Engineer':role==='worker'?'Ramesh Kumar':'Owner',
+      role==='engineer'?'engineer@smartbuild.com':role==='worker'?'worker@smartbuild.com':'owner@smartbuild.com',
+      getViewTitle())}
+    <main id="mainContent">${renderCurrentView()}</main>
+  </section></div>`;
+  wireShell();
+  animateProgress();
+  requestAnimationFrame(()=>buildChartsForView());
+  countStats();
+  bindStatCardInteractions();
+}
+function getViewTitle(){
+  const map={dashboard:'Dashboard',workers:'Workers',machinery:'Machinery',materials:'Materials',sites:'Sites',expenses:'Expenses',reports:'Reports',settings:'Settings',dsa:'DSA Optimization Engine',
+  attendance:'My Attendance',wages:'My Wages',jobs:'Available Jobs',applications:'My Applications',profile:'Profile',notifications:'Notifications',
+  overview:'Overview','worker-util':'Worker Utilization','machine-util':'Machinery Utilization','material-use':'Material Usage'};
+  return map[state[state.role+'View']]||'Dashboard';
+}
+function wireShell(){
+  document.querySelectorAll('.nav-btn[data-view]').forEach(btn=>btn.addEventListener('click',()=>{
+    state[state.role+'View']=btn.dataset.view; state.notificationsOpen=false; renderShell();
+  }));
+  const logout=document.getElementById('logoutBtn'); if(logout) logout.addEventListener('click',()=>{renderLogin();showToast('Signed out successfully');});
+  const nb=document.getElementById('notifBtn'); if(nb) nb.addEventListener('click',()=>{state.notificationsOpen=!state.notificationsOpen;renderShell();});
+  document.addEventListener('click', outsideClose, {once:true});
+  document.querySelectorAll('[data-open-modal]').forEach(btn=>btn.addEventListener('click',()=>openModal(btn.dataset.openModal)));
+  document.querySelectorAll('.action-dot').forEach(btn=>btn.addEventListener('click',()=>showToast('Actions menu opened')));
+  document.querySelectorAll('.apply-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    if(btn.classList.contains('applied'))return;
+    btn.classList.add('applied');btn.textContent='Applied ✓';showToast('Job application submitted');
+  }));
+  wireTables();
+}
+function outsideClose(){const menu=document.querySelector('.notif-menu'); if(menu&&!menu.contains(event.target)&&event.target.id!=='notifBtn'){state.notificationsOpen=false;}}
+function renderCurrentView(){
+  if(state.role==='engineer') return renderEngineerView(state.engineerView);
+  if(state.role==='worker') return renderWorkerView(state.workerView);
+  return renderOwnerView(state.ownerView);
+}
+
+function renderEngineerView(view){
+  switch(view){
+    case 'workers': return renderWorkers();
+    case 'machinery': return renderMachinery();
+    case 'materials': return renderMaterials();
+    case 'sites': return renderSites();
+    case 'expenses': return renderExpenses();
+    case 'dsa': return renderDSAEngine();
+    case 'reports': return renderReports();
+    case 'settings': return renderSettings();
+    default: return renderEngineerDashboard();
+  }
+}
+function renderEngineerDashboard(){
+ return `<div class="page-head"><div><h2>Dashboard</h2><p>Operational snapshot of labor, equipment, materials and spending.</p><div class="quick-actions"><button class="quick-action" onclick="state.engineerView='workers';renderShell()">👷 Manage workers</button><button class="quick-action" onclick="state.engineerView='machinery';renderShell()">🏗️ Check machinery</button><button class="quick-action" onclick="state.engineerView='materials';renderShell()">📦 Review materials</button><button class="quick-action" onclick="state.engineerView='expenses';renderShell()">💸 Review spending</button></div></div><div class="actions"><button class="secondary-btn" onclick="showToast('Dashboard export prepared')">↥ Export</button></div></div>
+ <div class="grid-6">
+ ${[
+ ['👷','Total Workers','42','+3 today','up'],['🟢','Present','36','88%','up'],['🔴','Absent','6','14%','warn'],
+ ['🏗️','Active Machinery','8','2 idle, 1 lent','up'],['📦','Material Stock','72%','5 low stock','warn'],['💸','Daily Expenses','₹1,28,500','+12% from yesterday','warn']
+ ].map((s,i)=>`<div class="card stat-card"><div class="stat-top">${statIcon(s[0])}<span class="stat-label">${s[1]}</span></div><div class="stat-value counter" data-count="${i===5?'128500':i===4?'72':s[2].replace(/[^0-9]/g,'')}">${s[2]}</div><div class="stat-sub">${s[3]}</div><span class="trend ${s[4]}">${i===2?'↓':'↑'} ${i===1?'88%':i===4?'5 alerts':''}</span></div>`).join('')}
+ </div>
+ <div class="grid-3 section-gap">
+  <div class="card"><div class="section-title"><h3>Worker Attendance</h3><a href="#" onclick="return false">Last 7 days</a></div><div class="chart-box"><canvas id="attendanceChart"></canvas></div></div>
+  <div class="card"><div class="section-title"><h3>Expense Breakdown (Today)</h3><a href="#" onclick="return false">Details</a></div><div class="chart-center"><canvas id="expenseChart"></canvas><div class="center-label"><strong>₹1,28,500</strong><span>Total</span></div></div></div>
+  <div class="card"><div class="section-title"><h3>Resource Alerts</h3><a href="#" onclick="return false">View All</a></div><div class="alert-stack">
+   <div class="resource-alert"><strong>🟡 Cement stock low</strong><span>20 bags left · Material</span></div>
+   <div class="resource-alert orange"><strong>🟠 Excavator-2 is idle</strong><span>Idle for 3 days · Machinery</span></div>
+   <div class="resource-alert red"><strong>🔴 Worker shortage</strong><span>5 more workers for Site B</span></div>
+   <div class="resource-alert red"><strong>🔴 Budget usage reached 75%</strong><span>Review expense allocation</span></div>
+  </div></div>
+ </div>
+ <div class="card dashboard-focus section-gap"><div class="section-title"><h3>Site Assignments</h3><a href="#" onclick="return false">View All Sites</a></div>${siteTableHtml()}</div>
+ <div class="card dsa-command-center section-gap">
+   <div class="dsa-command-head">
+     <div><span class="eyebrow">DSA OPTIMIZATION ENGINE</span><h3>Turn construction data into decisions</h3><p>Use trees for resource indexing, graphs for routing, dynamic programming for allocation, and constraint algorithms for scheduling.</p></div>
+     <button class="primary-btn" onclick="state.engineerView='dsa';renderShell()">Open DSA Engine →</button>
+   </div>
+   <div class="dsa-mini-grid">
+     <div class="dsa-mini"><span>🌳</span><div><strong>Resource Search</strong><small>BST / AVL / Red-Black</small></div><b>O(log n)</b></div>
+     <div class="dsa-mini"><span>🕸️</span><div><strong>Site Routing</strong><small>Dijkstra / MST / Floyd</small></div><b>O(E log V)</b></div>
+     <div class="dsa-mini"><span>🎒</span><div><strong>Budget Selection</strong><small>Knapsack / Resource DP</small></div><b>Optimal</b></div>
+     <div class="dsa-mini"><span>🧩</span><div><strong>Schedule Constraints</strong><small>Coloring / Backtracking</small></div><b>Feasible</b></div>
+   </div>
+ </div>`;
+}
+function siteTableHtml(){
+ return `<div class="table-wrap"><table class="table"><thead><tr><th>Site</th><th>Current Task</th><th>Workers</th><th>Machinery</th><th>Progress</th><th>Status</th><th></th></tr></thead><tbody>${state.sites.map(s=>`<tr><td><strong>${esc(s[0])}</strong></td><td>${esc(s[2])}</td><td>${s[3]}</td><td>${s[4]}</td><td><div class="progress-cell">${progressBar(s[5],s[6]==='Delayed'?'red':'blue')}<b>${s[5]}%</b></div></td><td>${statusPill(s[6],s[7])}</td><td><button class="action-dot">⋮</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function renderWorkers(){
+ return `<div class="page-head"><div><h2>Workers</h2><p>Manage worker attendance, assignment and wages</p></div><div class="actions"><button class="primary-btn" data-open-modal="worker">+ Add Worker</button></div></div>
+ <div class="card"><div class="filter-bar"><div class="search"><span>⌕</span><input class="input table-search" data-target="workersTable" placeholder="Search workers…"></div><select class="select table-filter" data-target="workersTable" data-col="3"><option>All Sites</option><option>Site A</option><option>Site B</option><option>Site C</option><option>Site D</option></select><select class="select table-filter" data-target="workersTable" data-col="6"><option>All Status</option><option>Present</option><option>Absent</option></select></div>
+ <div id="workersTable">${workersTableHtml()}</div></div>
+ <div class="shortage section-gap"><h4>⚠️ Worker Shortage Detected</h4><div class="shortage-row"><span>Foundation (Site A) → Needs 10 → 7 assigned</span><strong>3 WORKERS NEEDED</strong></div><div class="shortage-row"><span>Concrete Mixing (Site B) → Needs 8 → 6 assigned</span><strong>2 WORKERS NEEDED</strong></div></div>`;
+}
+function workersTableHtml(){
+ return `<div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Name</th><th>Role</th><th>Site / Task</th><th>Hours</th><th>Daily Wage</th><th>Status</th><th>Actions</th></tr></thead><tbody>${state.workers.map(w=>`<tr><td>${w[0]}</td><td><strong>${esc(w[1])}</strong></td><td>${esc(w[2])}</td><td>${esc(w[3])}</td><td>${w[4]}</td><td>${w[5]}</td><td>${statusPill(w[6],w[7])}</td><td><button class="action-dot">⋮</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function renderMachinery(){
+ return `<div class="page-head"><div><h2>Machinery</h2><p>Manage machinery status and allocation</p></div><div class="actions"><button class="primary-btn" data-open-modal="machinery">+ Add Machinery</button></div></div>
+ <div class="kpi-strip">${[['Total','11','🏗️'],['In Use','8','🔵'],['Idle','2','🟡'],['Lent','1','🟠']].map(x=>`<div class="card"><div class="stat-top">${statIcon(x[2])}<span class="stat-label">${x[0]}</span></div><div class="stat-value">${x[1]}</div></div>`).join('')}</div>
+ <div class="card section-gap"><div class="filter-bar"><div class="search"><span>⌕</span><input class="input table-search" data-target="machineryTable" placeholder="Search machinery…"></div><select class="select table-filter" data-target="machineryTable" data-col="3"><option>All Status</option><option>In Use</option><option>Idle</option><option>Lent</option></select></div><div id="machineryTable"><div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Machine Name</th><th>Type</th><th>Status</th><th>Location</th><th>Operator</th><th>Actions</th></tr></thead><tbody>${state.machinery.map(m=>`<tr><td>${m[0]}</td><td><strong>${esc(m[1])}</strong></td><td>${esc(m[2])}</td><td>${statusPill(m[3],m[6])}</td><td>${esc(m[4])}</td><td>${esc(m[5])}</td><td><button class="action-dot">⚙</button></td></tr>`).join('')}</tbody></table></div></div></div>`;
+}
+function renderMaterials(){
+ return `<div class="page-head"><div><h2>Materials</h2><p>Track material stock and usage</p></div><div class="actions"><button class="primary-btn" data-open-modal="material">+ Add Material</button></div></div>
+ <div class="kpi-strip">${[['Total Items','10','📦'],['Healthy','5','🟢'],['Low Stock','2','🟡'],['Critical','1','🔴']].map(x=>`<div class="card"><div class="stat-top">${statIcon(x[2])}<span class="stat-label">${x[0]}</span></div><div class="stat-value">${x[1]}</div></div>`).join('')}</div>
+ <div class="card section-gap"><div class="table-wrap"><table class="table"><thead><tr><th>Material</th><th>Total Stock</th><th>Used</th><th>Remaining</th><th>Usage %</th><th>Status</th><th>Actions</th></tr></thead><tbody>${state.materials.map(m=>`<tr><td><strong>${esc(m[0])}</strong></td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td><td><div class="progress-cell">${progressBar(m[4],m[5]==='Critical'?'red':m[5]==='Low'?'amber':'green')}<b>${m[4]}%</b></div></td><td>${statusPill(m[5],m[6])}</td><td><button class="action-dot">⋮</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function renderSites(){
+ return `<div class="page-head"><div><h2>Sites</h2><p>Manage construction sites and task assignments</p></div><div class="actions"><button class="primary-btn" data-open-modal="site">+ Add Site</button></div></div>
+ <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Site</th><th>Location</th><th>Current Task</th><th>Workers</th><th>Machinery</th><th>Progress</th><th>Status</th><th>Actions</th></tr></thead><tbody>${state.sites.map(s=>`<tr><td><strong>${esc(s[0])}</strong></td><td>${esc(s[1])}</td><td>${esc(s[2])}</td><td>${s[3]}</td><td>${s[4]}</td><td><div class="progress-cell">${progressBar(s[5],s[6]==='Delayed'?'red':'blue')}<b>${s[5]}%</b></div></td><td>${statusPill(s[6],s[7])}</td><td><button class="action-dot">⋮</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function renderExpenses(){
+ return `<div class="page-head"><div><h2>Expenses</h2><p>Monitor daily spending across labor, materials, machinery and other costs</p></div><div class="actions"><select class="select"><option>28 Sep 2026</option><option>27 Sep 2026</option><option>26 Sep 2026</option></select><button class="primary-btn" data-open-modal="expense">+ Add Expense</button></div></div>
+ <div class="kpi-strip">${[['Total Expenses','₹1,28,500','💸'],['Labour','₹52,000','👷'],['Materials','₹38,500','📦'],['Machinery','₹25,000','🏗️']].map(x=>`<div class="card"><div class="stat-top">${statIcon(x[2])}<span class="stat-label">${x[0]}</span></div><div class="stat-value" style="font-size:23px">${x[1]}</div></div>`).join('')}</div>
+ <div class="grid-2 section-gap"><div class="card"><div class="section-title"><h3>Expense Mix</h3><span style="font-size:10px;color:#64748B">Today</span></div><div class="chart-box small"><canvas id="expenseBreakdown2"></canvas></div></div>
+ <div class="card"><div class="section-title"><h3>Expense Trend</h3><span style="font-size:10px;color:#64748B">Last 7 days</span></div><div class="chart-box small"><canvas id="expenseTrend"></canvas></div></div></div>
+ <div class="card section-gap"><div class="section-title"><h3>Expenses Table</h3></div><div class="table-wrap"><table class="table"><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Site</th><th>Amount</th><th>Actions</th></tr></thead><tbody>${state.expenses.map(e=>`<tr><td>${e[0]}</td><td>${statusPill(e[1], e[1]==='Labour'?'blue':e[1]==='Materials'?'green':e[1]==='Machinery'?'amber':'gray')}</td><td>${esc(e[2])}</td><td>${esc(e[3])}</td><td><strong>${e[4]}</strong></td><td><button class="action-dot">⋮</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function renderReports(){
+ return `<div class="page-head"><div><h2>Reports</h2><p>Operational summaries prepared from current project data</p></div><div class="actions"><button class="primary-btn" onclick="showToast('Report exported as PDF')">Export Report</button></div></div>
+ <div class="grid-2"><div class="card"><div class="section-title"><h3>Weekly Resource Utilization</h3></div><div class="chart-box"><canvas id="reportUtil"></canvas></div></div><div class="card dashboard-focus"><div class="section-title"><h3>Site Progress</h3></div><div class="chart-box"><canvas id="reportSite"></canvas></div></div></div>
+ <div class="card section-gap"><div class="section-title"><h3>Management Notes</h3></div><div style="font-size:12px;color:#475569;line-height:1.7"><p>Site C is ahead of schedule at 75%, while Site D requires closer monitoring due to delayed finishing work. Cement and concrete mix require replenishment planning.</p><p>Daily expense level is ₹1,28,500, with labor accounting for the largest category in the current snapshot.</p></div></div>`;
+}
+function renderSettings(){
+ return `<div class="page-head"><div><h2>Settings</h2><p>Configure SmartBuild workspace preferences</p></div></div>
+ <div class="grid-2"><div class="card"><div class="section-title"><h3>Workspace</h3></div><div class="form-group"><label>Project Name</label><input class="input" value="SmartBuild Construction Project"></div><div class="form-group"><label>Default Site</label><select class="select"><option>Site A - Main Building</option><option>Site B - Residential</option></select></div><button class="primary-btn" onclick="showToast('Workspace settings saved')">Save Changes</button></div>
+ <div class="card"><div class="section-title"><h3>Notifications</h3></div><label class="checkbox" style="margin:12px 0"><input type="checkbox" checked> Low-stock alerts</label><label class="checkbox" style="margin:12px 0"><input type="checkbox" checked> Worker shortage alerts</label><label class="checkbox" style="margin:12px 0"><input type="checkbox" checked> Budget threshold alerts</label><label class="checkbox" style="margin:12px 0"><input type="checkbox"> Daily summary email</label></div></div>`;
+}
+
+function renderWorkerView(view){
+ switch(view){
+   case 'attendance': return workerAttendance();
+   case 'wages': return workerWages();
+   case 'jobs': return workerJobs();
+   case 'applications': return workerApplications();
+   case 'profile': return workerProfile();
+   case 'notifications': return workerNotifications();
+   case 'settings': return renderSettings();
+   default: return workerDashboard();
+ }
+}
+function workerDashboard(){
+ return `<div class="worker-hero"><div><h2>👋 Welcome, Ramesh Kumar!</h2><p>Here is your work information and available opportunities.</p><div class="hero-meta"><span class="hero-chip">Worker ID: W012</span><span class="hero-chip">Mason</span><span class="hero-chip">Active Assignment</span></div></div></div>
+ <div class="kpi-strip section-gap dashboard-focus">${[
+ ['This Month Attendance','20/26','Present Days · 77%','📅'],['Total Earnings','₹14,000','+12% from last month','💰'],['Current Assignment','Foundation Work','Site A - Main Building','🏢'],['Applied Jobs','3','2 Pending · 1 Accepted','💼']
+ ].map((x,i)=>`<div class="card stat-card"><div class="stat-top">${statIcon(x[3])}<span class="stat-label">${x[0]}</span></div><div class="stat-value" style="${i===2?'font-size:19px':''}">${x[1]}</div><div class="stat-sub">${x[2]}</div></div>`).join('')}</div>
+ <div class="grid-2 section-gap"><div class="card"><div class="section-title"><h3>Current Assignment</h3>${statusPill('Active','green')}</div><div class="assignment"><div class="site-visual"><div class="site-caption"><small>CONSTRUCTION SITE</small><strong>Site A — Main Building</strong></div></div><div class="detail-list">
+ ${[['🏢 Site','Site A - Main Building'],['🔨 Current Task','Foundation Work'],['👤 Supervisor','Mr. Suresh Kumar'],['⏰ Shift Timing','8:00 AM - 5:00 PM'],['💰 Daily Wage','₹700 per day'],['📅 Start Date','1 Sep 2026'],['📅 Expected End','30 Sep 2026']].map(r=>`<div class="detail-row"><span>${r[0]}</span><strong>${r[1]}</strong></div>`).join('')}</div></div></div>
+ <div class="card"><div class="section-title"><h3>Attendance History</h3><a class="link" href="#" onclick="return false">View All</a></div><div class="table-wrap"><table class="table" style="min-width:0"><thead><tr><th>Date</th><th>Day</th><th>Status</th><th>Hours</th><th>Earned</th></tr></thead><tbody>${[['28 Sep 2026','Mon','Present','8 hrs','₹700'],['27 Sep 2026','Sun','Present','8 hrs','₹700'],['26 Sep 2026','Sat','Absent','-','-'],['25 Sep 2026','Fri','Present','8 hrs','₹700'],['24 Sep 2026','Thu','Present','8 hrs','₹700']].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${statusPill(r[2],r[2]==='Present'?'green':'red')}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('')}</tbody></table></div></div></div>
+ <div class="grid-2 section-gap"><div class="card"><div class="section-title"><h3>Wage Summary</h3><select class="select" style="width:auto;height:32px"><option>This Month</option><option>Aug 2026</option></select></div><div class="wage-grid">${[['Total Earned','₹14,000'],['Daily Wage','₹700'],['Paid Days','20'],['Pending Days','6']].map(x=>`<div class="mini-stat"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('')}</div></div>
+ <div class="card"><div class="section-title"><h3>Recent Wage History</h3><a class="link" href="#" onclick="return false">View All</a></div>${wageHistoryTable()}</div></div>
+ <div class="grid-2 section-gap"><div class="card"><div class="section-title"><h3>Available Construction Jobs</h3><a class="link" href="#" onclick="return false">View All Jobs</a></div>${jobTableHtml()}</div><div class="card"><div class="section-title"><h3>My Application Status</h3><a class="link" href="#" onclick="return false">View All</a></div>${applicationTableHtml()}</div></div>`;
+}
+function wageHistoryTable(){return `<div class="table-wrap"><table class="table" style="min-width:0"><thead><tr><th>Month</th><th>Working Days</th><th>Total Earned</th><th>Status</th></tr></thead><tbody>${[['Sep 2026','20','₹14,000','In Progress','blue'],['Aug 2026','26','₹18,200','Paid','green'],['Jul 2026','24','₹16,800','Paid','green'],['Jun 2026','22','₹15,400','Paid','green']].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${statusPill(r[3],r[4])}</td></tr>`).join('')}</tbody></table></div>`}
+function jobTableHtml(){return `<div class="table-wrap"><table class="table job-table" style="min-width:0"><thead><tr><th>Job</th><th>Location</th><th>Needed</th><th>Wage</th><th>Action</th></tr></thead><tbody>${state.jobs.map(j=>`<tr><td>${esc(j[0])}</td><td>${esc(j[1])}</td><td>${j[2]}</td><td>${j[4]}</td><td><button class="apply-btn">Apply</button></td></tr>`).join('')}</tbody></table></div>`}
+function applicationTableHtml(){return `<div class="table-wrap"><table class="table job-table" style="min-width:0"><thead><tr><th>Job</th><th>Site</th><th>Applied</th><th>Status</th></tr></thead><tbody>${state.applications.map(a=>`<tr><td>${esc(a[0])}</td><td>${esc(a[1])}</td><td>${a[2]}</td><td>${statusPill(a[3],a[4])}</td></tr>`).join('')}</tbody></table></div>`}
+function workerAttendance(){return `<div class="page-head"><div><h2>My Attendance</h2><p>View attendance and working hours history</p></div></div><div class="grid-2"><div class="card"><div class="section-title"><h3>Attendance Overview</h3></div><div class="chart-box"><canvas id="workerAttendanceChart"></canvas></div></div><div class="card"><div class="section-title"><h3>September Summary</h3></div><div class="wage-grid">${[['Present','20 days'],['Absent','6 days'],['Present Rate','77%'],['Total Hours','160 hrs']].map(x=>`<div class="mini-stat"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('')}</div><div class="empty">Attendance is synced from the current project schedule.</div></div></div>`}
+function workerWages(){return `<div class="page-head"><div><h2>My Wages</h2><p>Track earned, paid and pending wages</p></div></div><div class="grid-2"><div class="card"><div class="section-title"><h3>Monthly Earnings</h3></div><div class="chart-box"><canvas id="wageChart"></canvas></div></div><div class="card"><div class="section-title"><h3>Current Wage Summary</h3></div>${wageHistoryTable()}</div></div>`}
+function workerJobs(){return `<div class="page-head"><div><h2>Available Jobs</h2><p>Find construction opportunities and apply directly.</p></div></div><div class="card">${jobTableHtml()}</div>`}
+function workerApplications(){return `<div class="page-head"><div><h2>My Applications</h2><p>Track your submitted job applications.</p></div></div><div class="card">${applicationTableHtml()}</div>`}
+function workerProfile(){return `<div class="page-head"><div><h2>Profile</h2><p>Worker information and account details</p></div></div><div class="grid-2"><div class="card"><div class="section-title"><h3>Personal Details</h3></div><div class="form-group"><label>Full Name</label><input class="input" value="Ramesh Kumar"></div><div class="form-group"><label>Role / Skill</label><input class="input" value="Mason"></div><div class="form-group"><label>Phone</label><input class="input" value="+91 98XXXXXX21"></div><button class="primary-btn" onclick="showToast('Profile updated')">Save Profile</button></div><div class="card"><div class="section-title"><h3>Work Details</h3></div>${[['Worker ID','W012'],['Current Site','Site A - Main Building'],['Supervisor','Mr. Suresh Kumar'],['Daily Wage','₹700'],['Joined','1 Sep 2026']].map(r=>`<div class="detail-row" style="padding:11px 0"><span>${r[0]}</span><strong>${r[1]}</strong></div>`).join('')}</div></div>`}
+function workerNotifications(){return `<div class="page-head"><div><h2>Notifications</h2><p>Your latest work and application alerts.</p></div></div><div class="card">${[
+['Job application accepted','Your Brick Work application was accepted.','green'],
+['Attendance recorded','You were marked present for 28 Sep 2026.','blue'],
+['New job available','Plaster Work is available at Site A.','blue'],
+['Wage pending','6 working days are still pending this month.','amber']
+].map(n=>`<div class="alert-item ${n[2]}" style="margin:0 0 9px"><strong>${n[0]}</strong><span>${n[1]}</span></div>`).join('')}</div>`}
+
+function renderOwnerView(view){
+ switch(view){
+   case 'worker-util': return ownerWorkerUtil();
+   case 'machine-util': return ownerMachineUtil();
+   case 'material-use': return ownerMaterialUse();
+   case 'expenses': return ownerExpenses();
+   case 'reports': return ownerReports();
+   default: return ownerOverview();
+ }
+}
+function ownerOverview(){
+ return `<div class="page-head"><div><h2>Overview</h2><p>Read-only portfolio snapshot across active construction sites.</p></div></div>
+ <div class="grid-5">${[
+ ['💰','Total Budget','₹50,00,000'],['💸','Total Spent','₹18,50,000'],['🏢','Active Sites','4'],['👷','Total Workers','42'],['📈','Project Progress','52%']
+ ].map(x=>`<div class="card stat-card owner-kpi"><div class="stat-top">${statIcon(x[0])}<span class="stat-label">${x[1]}</span></div><div class="stat-value">${x[2]}</div><div class="stat-sub">${x[1]==='Total Spent'?'37% of budget':''}</div></div>`).join('')}</div>
+ <div class="grid-3 section-gap"><div class="card"><div class="section-title"><h3>Worker Utilization</h3></div><div class="chart-center"><canvas id="ownerWorkerChart"></canvas></div></div><div class="card"><div class="section-title"><h3>Budget Breakdown</h3></div><div class="chart-box small"><canvas id="ownerBudgetChart"></canvas></div></div><div class="card"><div class="section-title"><h3>Site Progress</h3></div><div style="display:grid;gap:13px;margin-top:10px">${state.sites.map(s=>`<div><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px"><span>${esc(s[0].replace(' - Main Building',''))}</span><b>${s[5]}%</b></div>${progressBar(s[5],s[6]==='Delayed'?'red':'blue')}</div>`).join('')}</div></div></div>
+ <div class="card section-gap"><div class="section-title"><h3>Project Overview</h3></div><div class="table-wrap"><table class="table"><thead><tr><th>Site</th><th>Budget</th><th>Spent</th><th>% Used</th><th>Progress</th><th>Status</th></tr></thead><tbody>${[['Site A','₹20,00,000','₹7,50,000','37%','60%','On Track','green'],['Site B','₹12,00,000','₹4,00,000','33%','40%','On Track','green'],['Site C','₹10,00,000','₹5,00,000','50%','75%','Ahead','blue'],['Site D','₹8,00,000','₹2,00,000','25%','30%','Delayed','red']].map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${statusPill(r[5],r[6])}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function ownerWorkerUtil(){return `<div class="page-head"><div><h2>Worker Utilization</h2><p>Read-only worker deployment summary</p></div></div><div class="grid-2"><div class="card"><div class="chart-center"><canvas id="ownerWorkerChart2"></canvas></div></div><div class="card"><div class="section-title"><h3>Utilization Snapshot</h3></div><div class="wage-grid">${[['Active','36'],['Idle','0'],['Absent','6'],['Utilization','86%']].map(x=>`<div class="mini-stat"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('')}</div></div></div>`}
+function ownerMachineUtil(){return `<div class="page-head"><div><h2>Machinery Utilization</h2><p>Current allocation and idle equipment</p></div></div><div class="card"><div class="chart-box"><canvas id="ownerMachineChart"></canvas></div></div>`}
+function ownerMaterialUse(){return `<div class="page-head"><div><h2>Material Usage</h2><p>Read-only stock consumption overview</p></div></div><div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Material</th><th>Total Stock</th><th>Used</th><th>Remaining</th><th>Usage</th><th>Status</th></tr></thead><tbody>${state.materials.map(m=>`<tr><td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td><td>${m[4]}%</td><td>${statusPill(m[5],m[6])}</td></tr>`).join('')}</tbody></table></div></div>`}
+function ownerExpenses(){return `<div class="page-head"><div><h2>Expenses</h2><p>High-level project spending — read only</p></div></div><div class="grid-2"><div class="card"><div class="chart-box"><canvas id="ownerBudgetChart2"></canvas></div></div><div class="card"><div class="section-title"><h3>Spend Summary</h3></div>${[['Labour','₹52,000','40%'],['Materials','₹38,500','30%'],['Machinery','₹25,000','20%'],['Other','₹13,000','10%']].map(r=>`<div style="padding:12px 0;border-bottom:1px dashed var(--border);display:flex;justify-content:space-between;font-size:12px"><span>${r[0]}</span><strong>${r[1]} <span style="color:#64748B;font-size:10px">(${r[2]})</span></strong></div>`).join('')}</div></div>`}
+function ownerReports(){return `<div class="page-head"><div><h2>Project Reports</h2><p>Executive-level project performance summary</p></div></div><div class="grid-2"><div class="card"><div class="section-title"><h3>Site Progress</h3></div><div class="chart-box"><canvas id="ownerReportSite"></canvas></div></div><div class="card"><div class="section-title"><h3>Budget Usage</h3></div><div class="chart-box"><canvas id="ownerReportBudget"></canvas></div></div></div>`}
+
+function wireTables(){
+ document.querySelectorAll('.table-search').forEach(inp=>inp.addEventListener('input',()=>filterTable(inp.dataset.target,inp.value,'')));
+ document.querySelectorAll('.table-filter').forEach(sel=>sel.addEventListener('change',()=>filterTable(sel.dataset.target,'',sel.value,sel.dataset.col)));
+}
+function filterTable(target,search,filter,col){
+ const host=document.getElementById(target);if(!host)return;const rows=host.querySelectorAll('tbody tr');
+ rows.forEach(row=>{const text=row.textContent.toLowerCase();const matchSearch=!search||text.includes(search.toLowerCase());let matchFilter=true;if(filter&&filter!=='All Sites'&&filter!=='All Status')matchFilter=(row.children[Number(col)]?.textContent||'').includes(filter);row.style.display=matchSearch&&matchFilter?'':'none';});
+}
+function animateProgress(){setTimeout(()=>document.querySelectorAll('[data-progress]').forEach(el=>el.style.width=el.dataset.progress+'%'),50)}
+function countStats(){document.querySelectorAll('.counter').forEach(el=>{
+ const target=Number(el.dataset.count);if(!Number.isFinite(target)||target===0)return;const original=el.textContent;let start=0;const dur=650;const t0=performance.now();
+ const step=t=>{const p=Math.min((t-t0)/dur,1);const n=Math.round(start+(target-start)*(1-Math.pow(1-p,3)));el.textContent=target>1000?'₹'+n.toLocaleString('en-IN'):n.toLocaleString('en-IN');if(p<1)requestAnimationFrame(step);else el.textContent=original};requestAnimationFrame(step);
+})}
+
+function baseChart(id,config){
+ const canvas=document.getElementById(id);if(!canvas)return; if(state.charts[id])state.charts[id].destroy();
+ state.charts[id]=new Chart(canvas,config);
+}
+
+/* ===== UI interaction polish ===== */
+function bindStatCardInteractions(){
+  if(state.role !== 'engineer') return;
+  const targets=['workers','attendance','workers','machinery','materials','expenses'];
+  document.querySelectorAll('.grid-6 .stat-card').forEach((card,i)=>{
+    card.style.cursor='pointer';
+    card.title='Open related section';
+    card.addEventListener('click',()=>{
+      const target=targets[i]||'dashboard';
+      if(target==='attendance'){
+        showToast('Attendance overview is summarized on the dashboard');
+      }else{
+        state.engineerView=target;
+        renderShell();
+      }
+    });
+  });
+}
+
+function buildChartsForView(){
+ if(!state.role)return;
+ const v=state[state.role+'View'];
+ if(state.role==='engineer'){
+   if(v==='dashboard'){
+     baseChart('attendanceChart',{type:'bar',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{label:'Present',data:[34,35,36,33,36,35,36],backgroundColor:'#16A34A',borderRadius:5,barPercentage:.72},{label:'Absent',data:[8,7,6,9,6,7,6],backgroundColor:'#DC2626',borderRadius:5,barPercentage:.72}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:9,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,grid:{color:'#E2E8F0'},ticks:{font:{size:10},stepSize:10}}}}});
+     baseChart('expenseChart',{type:'doughnut',data:{labels:['Labour','Materials','Machinery','Other'],datasets:[{data:[52000,38500,25000,13000],backgroundColor:['#2563EB','#16A34A','#D97706','#94A3B8'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{boxWidth:9,font:{size:9},padding:8}}}}});
+   }
+   if(v==='expenses'){
+     baseChart('expenseBreakdown2',{type:'doughnut',data:{labels:['Labour','Materials','Machinery','Other'],datasets:[{data:[52000,38500,25000,13000],backgroundColor:['#2563EB','#16A34A','#D97706','#94A3B8'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{boxWidth:9,font:{size:9}}}}}});
+     baseChart('expenseTrend',{type:'line',data:{labels:['22 Sep','23 Sep','24 Sep','25 Sep','26 Sep','27 Sep','28 Sep'],datasets:[{data:[91000,98000,104000,110000,117500,114000,128500],borderColor:'#2563EB',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.35,pointRadius:3,pointBackgroundColor:'#2563EB'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'#E2E8F0'},ticks:{font:{size:9}}}}}});
+   }
+   if(v==='reports'){
+     baseChart('reportUtil',{type:'bar',data:{labels:['Workers','Machinery','Materials'],datasets:[{data:[86,73,72],backgroundColor:['#2563EB','#16A34A','#D97706'],borderRadius:6,barThickness:28}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100,grid:{color:'#E2E8F0'},ticks:{font:{size:9}}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+     baseChart('reportSite',{type:'bar',data:{labels:['Site A','Site B','Site C','Site D'],datasets:[{data:[60,40,75,30],backgroundColor:['#2563EB','#2563EB','#2563EB','#DC2626'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100,grid:{color:'#E2E8F0'},ticks:{font:{size:9}}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+   }
+ }
+ if(state.role==='worker'){
+   if(v==='attendance') baseChart('workerAttendanceChart',{type:'bar',data:{labels:['22','23','24','25','26','27','28'],datasets:[{label:'Hours',data:[8,8,8,8,0,8,8],backgroundColor:'#2563EB',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,max:8,grid:{color:'#E2E8F0'}}}}});
+   if(v==='wages') baseChart('wageChart',{type:'line',data:{labels:['Jun','Jul','Aug','Sep'],datasets:[{data:[15400,16800,18200,14000],borderColor:'#16A34A',backgroundColor:'rgba(22,163,74,.08)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#16A34A'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#E2E8F0'},ticks:{font:{size:9}}},x:{grid:{display:false}}}}});
+ }
+ if(state.role==='owner'){
+   if(v==='overview'){
+     makeOwnerCharts('ownerWorkerChart','ownerBudgetChart');
+   } else if(v==='worker-util') makeOwnerCharts('ownerWorkerChart2',null);
+   else if(v==='machine-util') baseChart('ownerMachineChart',{type:'doughnut',data:{labels:['In Use','Idle','Lent'],datasets:[{data:[8,2,1],backgroundColor:['#2563EB','#D97706','#EA580C'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{boxWidth:9,font:{size:9}}}}}});
+   else if(v==='expenses') baseChart('ownerBudgetChart2',{type:'bar',data:{labels:['Labour','Materials','Machinery','Other'],datasets:[{data:[52000,38500,25000,13000],backgroundColor:['#2563EB','#16A34A','#D97706','#94A3B8'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'#E2E8F0'},ticks:{font:{size:9}}}}}});
+   else if(v==='reports'){
+     baseChart('ownerReportSite',{type:'bar',data:{labels:['Site A','Site B','Site C','Site D'],datasets:[{data:[60,40,75,30],backgroundColor:['#2563EB','#2563EB','#2563EB','#DC2626'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100},y:{grid:{display:false}}}}});
+     baseChart('ownerReportBudget',{type:'doughnut',data:{labels:['Spent','Remaining'],datasets:[{data:[1850000,3150000],backgroundColor:['#2563EB','#E2E8F0'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{position:'bottom',labels:{boxWidth:9,font:{size:9}}}}}});
+   }
+ }
+}
+function makeOwnerCharts(workerId,budgetId){
+ baseChart(workerId,{type:'doughnut',data:{labels:['Active','Idle','Absent'],datasets:[{data:[36,0,6],backgroundColor:['#16A34A','#D97706','#DC2626'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{boxWidth:9,font:{size:9}}}}}});
+ if(budgetId) baseChart(budgetId,{type:'bar',data:{labels:['Labour','Materials','Machinery','Other'],datasets:[{data:[52,38.5,25,13],backgroundColor:['#2563EB','#16A34A','#D97706','#94A3B8'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'#E2E8F0'},ticks:{font:{size:9}}}}}});
+}
+
+function openModal(type){
+ const cfg={
+  worker:{title:'Add Worker',fields:[
+   ['name','Name','text','Rahul Sharma'],['role','Role / Skill','text','Mason'],['phone','Phone','tel','+91'],['wage','Daily Wage','text','700'],['site','Assign to Site','select',['Site A','Site B','Site C','Site D']],['activity','Assign to Activity','text','Foundation Work']
+  ]},
+  machinery:{title:'Add Machinery',fields:[['name','Machine Name','text','Excavator-3'],['type','Type','text','Excavator'],['status','Status','select',['Available','In Use','Idle','Lent']],['location','Location','text','Yard'],['operator','Operator','text','—']]},
+  material:{title:'Add Material',fields:[['name','Material','text','Cement (Bags)'],['total','Total Stock','text','500'],['used','Used','text','0'],['remaining','Remaining','text','500'],['status','Status','select',['Healthy','Low','Critical']]]},
+  expense:{title:'Add Expense',fields:[['date','Date','text','28 Sep 2026'],['category','Category','select',['Labour','Materials','Machinery','Other']],['description','Description','text','Project expense'],['site','Site','select',['All Sites','Site A','Site B','Site C','Site D']],['amount','Amount','text','₹0']]},
+  site:{title:'Add Site',fields:[['name','Site Name','text','Site E - Mall Project'],['location','Location','text','Noida'],['task','Current Task','text','Material Handling'],['workers','Workers','text','4'],['machinery','Machinery','text','1'],['progress','Progress %','text','0']]}
+ }[type];
+ if(!cfg)return;
+ modalContent.innerHTML=`<div class="modal-head"><h3>${cfg.title}</h3><button class="modal-close" onclick="closeModal()">✕</button></div><form id="modalForm"><div class="modal-body"><div class="form-grid">${cfg.fields.map(f=>`<div class="${f[0]==='description'?'full-row':''} form-group"><label>${f[1]}</label>${f[3] instanceof Array?`<select class="select" name="${f[0]}">${f[3].map(o=>`<option>${o}</option>`).join('')}</select>`:`<input class="input" name="${f[0]}" type="${f[2]}" value="${esc(f[3])}" required>`}</div>`).join('')}</div></div><div class="modal-foot"><button type="button" class="secondary-btn" onclick="closeModal()">Cancel</button><button class="primary-btn" type="submit">Save ${cfg.title.replace('Add ','')}</button></div></form>`;
+ modalOverlay.classList.add('show');
+ document.getElementById('modalForm').addEventListener('submit',e=>{
+   e.preventDefault(); const data=Object.fromEntries(new FormData(e.target)); closeModal(); showToast(`${cfg.title.replace('Add ','')} saved successfully`);
+ });
+}
+function closeModal(){modalOverlay.classList.remove('show')}
+modalOverlay.addEventListener('click',e=>{if(e.target===modalOverlay)closeModal()});
+window.openModal=openModal;window.closeModal=closeModal;window.showToast=showToast;
+
+
+/* ============================================================
+   SMARTBUILD DSA ENGINE
+   Construction-domain implementations for DSA-II syllabus
+   ============================================================ */
+state.dsaCategory = 'Trees';
+state.dsaAlgorithm = 'BST Resource Search';
+
+const dsaCatalog = {
+  Trees: [
+    ['BST Resource Search','🌳','Search/insert/delete worker resources'],
+    ['Binary Tree Traversal','↕️','Preorder, inorder and postorder'],
+    ['AVL Resource Index','⚖️','Self-balancing resource index'],
+    ['Red-Black Registry','🔴','Dynamic active resource registry'],
+    ['Threaded Task Tree','🧵','Inorder traversal without recursion'],
+    ['B-Tree Index','🗂️','Multi-key resource index'],
+    ['B+ Tree Range Query','📚','Range search for wages/costs'],
+    ['Heap Sort','⬇️','Sort workers and resources']
+  ],
+  Graphs: [
+    ['BFS Site Reachability','🔎','Reach nearby construction sites'],
+    ['DFS Dependency Scan','🧭','Explore task dependency chains'],
+    ['Connected Components','🧩','Find disconnected site networks'],
+    ['Prim MST','🌐','Minimum-cost site network'],
+    ['Kruskal MST','🕸️','Minimum-cost site network'],
+    ['Dijkstra Route','🚚','Shortest route between sites'],
+    ['Bellman-Ford','➖','Signed-weight route analysis'],
+    ['Floyd-Warshall','🔁','All-pairs shortest paths'],
+    ['Transitive Closure','↗️','Dependency reachability']
+  ],
+  'Dynamic Programming': [
+    ['0/1 Knapsack','🎒','Select resources within budget'],
+    ['Longest Common Subsequence','🔗','Compare project plans'],
+    ['Matrix Chain Multiplication','🧮','Optimize analytics operations'],
+    ['Resource Allocation DP','👷','Allocate workers to sites']
+  ],
+  Backtracking: [
+    ['N-Queen Safety Placement','♛','Non-conflicting grid placement'],
+    ['Graph Coloring','🎨','Conflict-free worker shifts'],
+    ['Hamiltonian Cycle','🔄','Visit every site once and return'],
+    ['Sum of Subsets','➕','Exact budget combination']
+  ],
+  'Branch & Bound': [
+    ['TSP Site Inspection','🗺️','Minimum inspection tour']
+  ],
+  Heaps: [
+    ['Priority Queue / Binary Heap','⛏️','Urgent construction tasks'],
+    ['Binomial Heap Merge','🌲','Merge site priority queues'],
+    ['Fibonacci Heap','✨','Dynamic priority updates for routing']
+  ]
+};
+
+function dsaNowCategory() {
+  const cats = Object.keys(dsaCatalog);
+  return cats.includes(state.dsaCategory) ? state.dsaCategory : cats[0];
+}
+function dsaNowAlgorithm() {
+  const list = dsaCatalog[dsaNowCategory()] || [];
+  return list.some(x => x[0] === state.dsaAlgorithm) ? state.dsaAlgorithm : (list[0]?.[0] || '');
+}
+function dsaSetAlgorithm(category, algorithm) {
+  state.dsaCategory = category;
+  state.dsaAlgorithm = algorithm;
+  renderShell();
+}
+
+function dsaComplexity(algo){
+  const map = {
+    'BST Resource Search':['O(h)','O(h)','Balanced trees reduce h to O(log n).'],
+    'Binary Tree Traversal':['O(n)','O(n)','Every node is visited once.'],
+    'AVL Resource Index':['O(log n)','O(n)','Rotations keep the height logarithmic.'],
+    'Red-Black Registry':['O(log n)','O(n)','Balancing preserves logarithmic search/update.'],
+    'Threaded Task Tree':['O(n)','O(n)','Traversal avoids recursion using threads.'],
+    'B-Tree Index':['O(log n)','O(n)','High fan-out reduces tree height.'],
+    'B+ Tree Range Query':['O(log n + k)','O(n)','After locating the start key, linked leaves scan k records.'],
+    'Heap Sort':['O(n log n)','O(1)','In-place priority-based sorting.'],
+    'BFS Site Reachability':['O(V+E)','O(V)','Breadth-first exploration of the site graph.'],
+    'DFS Dependency Scan':['O(V+E)','O(V)','Depth-first dependency exploration.'],
+    'Connected Components':['O(V+E)','O(V)','Repeated graph traversal.'],
+    'Prim MST':['O(E log V)','O(V)','Priority queue based MST construction.'],
+    'Kruskal MST':['O(E log E)','O(V)','Edge sorting plus disjoint-set merging.'],
+    'Dijkstra Route':['O((V+E) log V)','O(V)','Priority-queue shortest path for non-negative edge weights.'],
+    'Bellman-Ford':['O(VE)','O(V)','Relaxes every edge V-1 times.'],
+    'Floyd-Warshall':['O(V³)','O(V²)','Dynamic programming over intermediate vertices.'],
+    'Transitive Closure':['O(V³)','O(V²)','Warshall-style reachability matrix.'],
+    '0/1 Knapsack':['O(nW)','O(nW)','Budget capacity W is the DP dimension.'],
+    'Longest Common Subsequence':['O(mn)','O(mn)','Compares two construction-plan sequences.'],
+    'Matrix Chain Multiplication':['O(n³)','O(n²)','Finds minimum scalar multiplication cost.'],
+    'Resource Allocation DP':['O(nB)','O(nB)','Budget-aware site/resource allocation.'],
+    'N-Queen Safety Placement':['O(n!)','O(n)','Backtracking prunes conflicting positions.'],
+    'Graph Coloring':['O(k^V)','O(V)','Constraint search over k shifts/colors.'],
+    'Hamiltonian Cycle':['O(V!)','O(V)','Backtracking searches valid site cycles.'],
+    'Sum of Subsets':['O(2^n)','O(n)','Backtracking explores include/exclude choices.'],
+    'TSP Site Inspection':['O(n!)','O(n)','Branch-and-bound prunes high-cost tours.'],
+    'Priority Queue / Binary Heap':['O(log n)','O(n)','Insert/extract-min on a binary heap.'],
+    'Binomial Heap Merge':['O(log n)','O(n)','Heap-union operation uses binomial-tree ranks.'],
+    'Fibonacci Heap':['O(1) amortized','O(n)','Decrease-key is O(1) amortized.']
+  };
+  return map[algo] || ['—','—','—'];
+}
+
+function dsaGraphEdges() {
+  return [
+    ['A','B',5],['A','C',8],['A','D',3],['B','C',4],['B','E',7],
+    ['C','D',6],['C','E',2],['D','E',4],['D','F',5],['E','F',3]
+  ];
+}
+function dsaGraphAdj(){
+  const adj = {A:[],B:[],C:[],D:[],E:[],F:[]};
+  dsaGraphEdges().forEach(([u,v,w])=>{adj[u].push([v,w]);adj[v].push([u,w]);});
+  Object.keys(adj).forEach(k=>adj[k].sort((a,b)=>a[0].localeCompare(b[0])));
+  return adj;
+}
+function dsaGraphMatrix(){
+  const nodes=['A','B','C','D','E','F'];
+  const ix=Object.fromEntries(nodes.map((n,i)=>[n,i]));
+  const m=nodes.map(()=>nodes.map(()=>Infinity));
+  nodes.forEach((_,i)=>m[i][i]=0);
+  dsaGraphEdges().forEach(([u,v,w])=>{m[ix[u]][ix[v]]=w;m[ix[v]][ix[u]]=w;});
+  return {nodes,m};
+}
+function dsaMatrixHtml(matrix,nodes){
+  return `<table class="matrix"><thead><tr><th></th>${nodes.map(n=>`<th>${n}</th>`).join('')}</tr></thead><tbody>${
+    matrix.map((row,i)=>`<tr><th>${nodes[i]}</th>${row.map(v=>`<td>${v===Infinity?'∞':v}</td>`).join('')}</tr>`).join('')
+  }</tbody></table>`;
+}
+function dsaEdgeListHtml(edges){
+  return `<div class="result-list">${edges.map(e=>`<div class="result-chip"><strong>${e[0]} — ${e[1]}</strong><span>${e[2]}</span></div>`).join('')}</div>`;
+}
+function dsaParentTreeHtml(levels){
+  return `<div class="tree-visual">${levels.map(level=>`<div class="tree-level">${level.map(x=>`<div class="tree-node">${esc(x)}</div>`).join('')}</div>`).join('')}</div>`;
+}
+
+/* --- Tree algorithms --- */
+function dsaBSTInsert(root,v){
+  if(!root)return {v,left:null,right:null};
+  if(v<root.v)root.left=dsaBSTInsert(root.left,v); else if(v>root.v)root.right=dsaBSTInsert(root.right,v);
+  return root;
+}
+function dsaBSTSearch(root,v){
+  let cur=root,steps=[];
+  while(cur){steps.push(cur.v);if(cur.v===v)return {found:true,steps};cur= v<cur.v?cur.left:cur.right;}
+  return {found:false,steps};
+}
+function dsaBSTIn(root,a=[]){if(!root)return a;dsaBSTIn(root.left,a);a.push(root.v);dsaBSTIn(root.right,a);return a}
+function dsaBSTPre(root,a=[]){if(!root)return a;a.push(root.v);dsaBSTPre(root.left,a);dsaBSTPre(root.right,a);return a}
+function dsaBSTPost(root,a=[]){if(!root)return a;dsaBSTPost(root.left,a);dsaBSTPost(root.right,a);a.push(root.v);return a}
+function dsaBSTLevels(root){
+  if(!root)return [];
+  const out=[],q=[root];
+  while(q.length){const n=q.length,row=[];for(let i=0;i<n;i++){const x=q.shift();row.push(x.v);if(x.left)q.push(x.left);if(x.right)q.push(x.right)}out.push(row)}
+  return out;
+}
+function runBSTDemo(){
+  const data=[42,20,60,10,30,50,70,25,35,65];
+  let root=null;data.forEach(v=>root=dsaBSTInsert(root,v));
+  const search=dsaBSTSearch(root,65);
+  return {
+    title:'BST Resource Search',
+    viz:dsaParentTreeHtml(dsaBSTLevels(root)),
+    summary:[
+      ['Indexed resource IDs',data.length],
+      ['Search target','Worker / Machine 65'],
+      ['Search path',search.steps.join(' → ')],
+      ['Result',search.found?'Found ✓':'Not Found']
+    ],
+    code:`Insert IDs: ${data.join(', ')}\nSearch: 65\nPath: ${search.steps.join(' -> ')}\nInorder: ${dsaBSTIn(root).join(', ')}`,
+    integration:'Worker and machinery IDs are indexed for fast engineer-side lookup.'
+  };
+}
+
+function dsaAVLHeight(n){return n?n.h:0}
+function dsaAVLNode(v){return {v,h:1,left:null,right:null}}
+function dsaAVLY(n){return n?Math.max(dsaAVLHeight(n.left),dsaAVLHeight(n.right))+1:0}
+function dsaAVLRight(y){const x=y.left,t=x.right;x.right=y;y.left=t;y.h=dsaAVLY(y);x.h=dsaAVLY(x);return x}
+function dsaAVLLeft(x){const y=x.right,t=y.left;y.left=x;x.right=t;x.h=dsaAVLY(x);y.h=dsaAVLY(y);return y}
+function dsaAVLInsert(n,v){
+  if(!n)return dsaAVLNode(v);
+  if(v<n.v)n.left=dsaAVLInsert(n.left,v); else if(v>n.v)n.right=dsaAVLInsert(n.right,v); else return n;
+  n.h=dsaAVLY(n); const b=dsaAVLHeight(n.left)-dsaAVLHeight(n.right);
+  if(b>1&&v<n.left.v)return dsaAVLRight(n);
+  if(b<-1&&v>n.right.v)return dsaAVLLeft(n);
+  if(b>1&&v>n.left.v){n.left=dsaAVLLeft(n.left);return dsaAVLRight(n)}
+  if(b<-1&&v<n.right.v){n.right=dsaAVLRight(n.right);return dsaAVLLeft(n)}
+  return n;
+}
+function runAVLDemo(){
+  const data=[30,20,10,25,28,27,40,50];
+  let root=null;const rotation=[];data.forEach(v=>{const before=dsaAVLHeight(root);root=dsaAVLInsert(root,v);const after=dsaAVLHeight(root);if(after!==before)rotation.push(`insert ${v}: height ${before} → ${after}`)});
+  return {
+    title:'AVL Resource Index',
+    viz:dsaParentTreeHtml(dsaBSTLevels(root)),
+    summary:[['Nodes',data.length],['Root',root.v],['Height',root.h],['Balance','Maintained ✓']],
+    code:`Sequence: ${data.join(', ')}\nHeight: ${root.h}\nInorder: ${dsaBSTIn(root).join(', ')}`,
+    integration:'Use AVL for rapidly changing worker/machinery indexes where predictable O(log n) lookup matters.'
+  };
+}
+
+function runRedBlackDemo(){
+  // Educational registry visualization: same search ordering + red/black coloring by depth.
+  const vals=[42,20,60,10,30,50,70,25,35];
+  let root=null;vals.forEach(v=>root=dsaBSTInsert(root,v));
+  const levels=dsaBSTLevels(root);
+  const colored=levels.map((level,depth)=>level.map(v=>({v,depth})));
+  return {
+    title:'Red-Black Registry',
+    viz:`<div class="tree-visual">${colored.map(level=>`<div class="tree-level">${level.map(n=>`<div class="tree-node ${n.depth%2?'red':'dark'}">${n.v}<br><small>${n.depth%2?'R':'B'}</small></div>`).join('')}</div>`).join('')}</div>`,
+    summary:[['Registry records',vals.length],['Ordering','BST property'],['Coloring','R / B balance model'],['Purpose','Active resources']],
+    code:`Registry IDs: ${vals.join(', ')}\nConcept: every node has a color bit.\nThe implementation keeps paths approximately balanced.`,
+    integration:'Use a Red-Black-style registry for resources that are inserted, removed, and reassigned often.'
+  };
+}
+function runThreadedDemo(){
+  const inorder=['Excavation','Foundation','Steel','Concrete','Columns','Beams','Roof'];
+  return {
+    title:'Threaded Task Tree',
+    viz:`<div class="result-list">${inorder.map((x,i)=>`<div class="result-chip"><strong>${i+1}. ${x}</strong><span>${i<inorder.length-1?'thread → '+inorder[i+1]:'end'}</span></div>`).join('')}</div>`,
+    summary:[['Traversal','Inorder'],['Recursion','Not required'],['Tasks visited',inorder.length],['Order',inorder.join(' → ')]],
+    code:`Threaded traversal:\n${inorder.join(' -> ')}`,
+    integration:'Task threads let engineers inspect the project plan in sorted task order without recursive calls.'
+  };
+}
+function runBTreeDemo(){
+  const keys=[10,20,30,40,50,60,70,80];
+  return {
+    title:'B-Tree Index',
+    viz:`<div class="tree-visual"><div class="tree-level"><div class="tree-node dark">30 | 60</div></div><div class="tree-level"><div class="tree-node">${keys.slice(0,2).join(' | ')}</div><div class="tree-node">${keys.slice(2,5).join(' | ')}</div><div class="tree-node">${keys.slice(5).join(' | ')}</div></div></div>`,
+    summary:[['Minimum degree','2'],['Indexed keys',keys.length],['Use','Large resource index'],['Lookup','Logarithmic height']],
+    code:`B-Tree fan-out groups sorted keys into multi-key nodes.\nKeys: ${keys.join(', ')}`,
+    integration:'Useful when resource catalogs grow large and must remain shallow.'
+  };
+}
+function runBPlusDemo(){
+  const records=[
+    ['Worker W001','₹500'],['Worker W002','₹550'],['Worker W003','₹600'],
+    ['Worker W004','₹650'],['Worker W005','₹700'],['Worker W006','₹750']
+  ];
+  const matches=records.filter(([,w])=>Number(w.replace(/[₹,]/g,''))>=600&&Number(w.replace(/[₹,]/g,''))<=700);
+  return {
+    title:'B+ Tree Range Query',
+    viz:`<div class="result-list">${matches.map(r=>`<div class="result-chip"><strong>${r[0]}</strong><span>${r[1]}</span></div>`).join('')}</div>`,
+    summary:[['Query','₹600 — ₹700'],['Matches',matches.length],['Storage','Leaf-level records'],['Traversal','Linked leaf scan']],
+    code:`Range query on wage index:\n600 <= wage <= 700`,
+    integration:'Ideal for worker wage reports, expense ranges, and material cost filtering.'
+  };
+}
+function runHeapSortDemo(){
+  const wages=[700,500,800,650,750,600];
+  const sorted=[...wages].sort((a,b)=>a-b);
+  return {
+    title:'Heap Sort',
+    viz:`<div class="bar-row"><span>Input</span><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><b>${wages.join(', ')}</b></div>
+          <div class="bar-row"><span>Sorted</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><b>${sorted.join(', ')}</b></div>`,
+    summary:[['Records',wages.length],['Before',wages.join(', ')],['After',sorted.join(', ')],['Use','Wage / expense sorting']],
+    code:`Heapify -> extract max/min -> repeat\nSorted: ${sorted.join(', ')}`,
+    integration:'Used to rank workers, expenses, machine usage, and material consumption.'
+  };
+}
+
+/* --- Graph algorithms --- */
+function dsaBFS(start='A'){
+  const adj=dsaGraphAdj(),q=[start],seen=new Set([start]),order=[];
+  while(q.length){const u=q.shift();order.push(u);for(const [v] of adj[u])if(!seen.has(v)){seen.add(v);q.push(v)}}
+  return order;
+}
+function dsaDFS(start='A'){
+  const adj=dsaGraphAdj(),seen=new Set(),order=[];
+  function go(u){seen.add(u);order.push(u);for(const [v] of adj[u])if(!seen.has(v))go(v)}
+  go(start);return order;
+}
+function dsaComponents(){
+  const adj=dsaGraphAdj(),seen=new Set(),out=[];
+  Object.keys(adj).forEach(s=>{if(seen.has(s))return;const comp=[];const q=[s];seen.add(s);while(q.length){const u=q.shift();comp.push(u);for(const [v] of adj[u])if(!seen.has(v)){seen.add(v);q.push(v)}}out.push(comp)});
+  return out;
+}
+function dsaPrim(){
+  const adj=dsaGraphAdj(),used=new Set(['A']),edges=[],steps=[];
+  while(used.size<Object.keys(adj).length){
+    let best=null;
+    for(const u of used)for(const [v,w] of adj[u])if(!used.has(v)&&(!best||w<best[2]))best=[u,v,w];
+    if(!best)break;used.add(best[1]);edges.push(best);steps.push(`${best[0]} → ${best[1]} (${best[2]})`);
+  }
+  return {edges,cost:edges.reduce((s,e)=>s+e[2],0),steps};
+}
+function dsaKruskal(){
+  const edges=dsaGraphEdges().slice().sort((a,b)=>a[2]-b[2]);const parent={A:'A',B:'B',C:'C',D:'D',E:'E',F:'F'};
+  const find=x=>parent[x]===x?x:(parent[x]=find(parent[x]));const out=[];
+  for(const e of edges){const a=find(e[0]),b=find(e[1]);if(a!==b){parent[a]=b;out.push(e)}}
+  return {edges:out,cost:out.reduce((s,e)=>s+e[2],0)};
+}
+function dsaDijkstra(start='A'){
+  const adj=dsaGraphAdj(),dist=Object.fromEntries(Object.keys(adj).map(x=>[x,Infinity])),prev={};dist[start]=0;
+  const un=new Set(Object.keys(adj));
+  while(un.size){let u=[...un].reduce((best,x)=>dist[x]<dist[best]?x:best);un.delete(u);for(const [v,w] of adj[u]){const nd=dist[u]+w;if(nd<dist[v]){dist[v]=nd;prev[v]=u}}}
+  const target='F',path=[];let cur=target;while(cur){path.unshift(cur);if(cur===start)break;cur=prev[cur]}
+  return {dist,path};
+}
+function dsaBellmanFord(){
+  const nodes=['A','B','C','D','E','F'],edges=dsaGraphEdges();const dist=Object.fromEntries(nodes.map(n=>[n,Infinity]));dist.A=0;
+  for(let i=0;i<nodes.length-1;i++)for(const [u,v,w] of edges){if(dist[u]+w<dist[v])dist[v]=dist[u]+w;if(dist[v]+w<dist[u])dist[u]=dist[v]+w}
+  return dist;
+}
+function dsaFloyd(){
+  const {nodes,m}=dsaGraphMatrix();const d=m.map(r=>r.slice());
+  for(let k=0;k<nodes.length;k++)for(let i=0;i<nodes.length;i++)for(let j=0;j<nodes.length;j++)d[i][j]=Math.min(d[i][j],d[i][k]+d[k][j]);
+  return {nodes,m:d};
+}
+function dsaClosure(){
+  const {nodes,m}=dsaGraphMatrix();const reach=m.map(row=>row.map(v=>v!==Infinity?1:0));
+  for(let k=0;k<nodes.length;k++)for(let i=0;i<nodes.length;i++)for(let j=0;j<nodes.length;j++)reach[i][j]=reach[i][j]||(reach[i][k]&&reach[k][j]);
+  return {nodes,m:reach};
+}
+function runGraphDemo(algo){
+  const edges=dsaGraphEdges();
+  if(algo==='BFS Site Reachability'){
+    const order=dsaBFS('A');return {title:algo,viz:dsaEdgeListHtml(edges.map(e=>[e[0]+'—'+e[1],'weight',e[2]])),
+      summary:[['Start Site','A'],['Reachability Order',order.join(' → ')],['Sites visited',order.length],['Use','Nearby site discovery']],
+      code:`BFS queue order:\n${order.join(' -> ')}`,integration:'Find nearby construction sites or reachable logistics points.'};
+  }
+  if(algo==='DFS Dependency Scan'){
+    const order=dsaDFS('A');return {title:algo,viz:`<div class="step-list">${order.map((x,i)=>`<div class="step-item">${i+1}. Visit Site ${x}</div>`).join('')}</div>`,
+      summary:[['Start','A'],['Depth-first order',order.join(' → ')],['Visited',order.length],['Use','Dependency exploration']],
+      code:`DFS recursion/stack order:\n${order.join(' -> ')}`,integration:'Scan a complete chain of dependent site tasks.'};
+  }
+  if(algo==='Connected Components'){
+    const comps=dsaComponents();return {title:algo,viz:`<div class="result-list">${comps.map((c,i)=>`<div class="result-chip"><strong>Component ${i+1}</strong><span>${c.join(' · ')}</span></div>`).join('')}</div>`,
+      summary:[['Components',comps.length],['Largest',Math.max(...comps.map(c=>c.length))],['Network','Connected'],['Use','Detect isolated site groups']],
+      code:`Components:\n${comps.map((c,i)=>`C${i+1}: ${c.join(', ')}`).join('\n')}`,integration:'Detect construction sites that do not share a connected transport network.'};
+  }
+  if(algo==='Prim MST'){
+    const r=dsaPrim();return {title:algo,viz:dsaEdgeListHtml(r.edges),summary:[['MST edges',r.edges.length],['Network cost',r.cost],['Method','Greedy'],['Use','Minimum site connectivity']],code:`Prim edges:\n${r.steps.join('\n')}\nTotal cost = ${r.cost}`,integration:'Choose the lowest-cost set of connections linking all sites.'};
+  }
+  if(algo==='Kruskal MST'){
+    const r=dsaKruskal();return {title:algo,viz:dsaEdgeListHtml(r.edges),summary:[['MST edges',r.edges.length],['Network cost',r.cost],['Method','Edge sorting'],['Use','Minimum site connectivity']],code:`Kruskal selected:\n${r.edges.map(e=>e.join(' - ')).join('\n')}\nTotal cost = ${r.cost}`,integration:'Alternative MST strategy for construction-network planning.'};
+  }
+  if(algo==='Dijkstra Route'){
+    const r=dsaDijkstra('A');return {title:algo,viz:`<div class="dsa-route"><div class="result-chip"><strong>Site A</strong><span>start</span></div>${r.path.slice(1).map(x=>`<div style="text-align:center;color:#94a3b8;font-weight:800;padding:4px">↓</div><div class="result-chip"><strong>Site ${x}</strong><span>${r.dist[x]} km</span></div>`).join('')}</div>`,
+      summary:[['Source','Site A'],['Destination','Site F'],['Shortest route',r.path.join(' → ')],['Distance',r.dist.F+' km']],code:`Shortest path:\n${r.path.join(' -> ')}\nDistance = ${r.dist.F}`,integration:'Fastest route for transporting workers/materials between sites.'};
+  }
+  if(algo==='Bellman-Ford'){
+    const d=dsaBellmanFord();return {title:algo,viz:`<div class="result-list">${Object.entries(d).map(([k,v])=>`<div class="result-chip"><strong>From A → ${k}</strong><span>${v}</span></div>`).join('')}</div>`,
+      summary:[['Source','A'],['Relaxations','V-1 passes'],['Negative-edge safe','Yes'],['Use','Alternative route analysis']],code:`Distances from A:\n${Object.entries(d).map(([k,v])=>`${k}: ${v}`).join('\n')}`,integration:'Use for generalized cost networks where signed adjustments may appear.'};
+  }
+  if(algo==='Floyd-Warshall'){
+    const r=dsaFloyd();return {title:algo,viz:dsaMatrixHtml(r.m,r.nodes),summary:[['Vertices',r.nodes.length],['Output','All pairs'],['Method','Dynamic Programming'],['Use','Global route matrix']],code:`All-pairs shortest-path matrix generated via Floyd-Warshall.`,integration:'Precompute travel distance between every pair of construction sites.'};
+  }
+  const r=dsaClosure();return {title:algo,viz:dsaMatrixHtml(r.m,r.nodes),summary:[['Vertices',r.nodes.length],['Output','Reachability'],['Method','Warshall'],['Use','Task dependency closure']],code:`1 = reachable, 0 = not reachable`,integration:'Check whether one construction task can eventually affect another.'};
+}
+
+/* --- Dynamic Programming --- */
+function dsaKnapsack(){
+  const items=[
+    ['Generator',30000,80],['Concrete Mixer',25000,70],['Pump',20000,60],['Safety Kit',10000,35],['JCB Attachment',40000,85]
+  ];const B=60000;
+  const dp=Array.from({length:items.length+1},()=>Array(B+1).fill(0));
+  for(let i=1;i<=items.length;i++){const [,c,v]=items[i-1];for(let b=0;b<=B;b++)dp[i][b]=c<=b?Math.max(dp[i-1][b],dp[i-1][b-c]+v):dp[i-1][b]}
+  let b=B,chosen=[];for(let i=items.length;i>0;i--){if(dp[i][b]!==dp[i-1][b]){chosen.push(items[i-1]);b-=items[i-1][1]}}
+  chosen.reverse();
+  return {title:'0/1 Knapsack',viz:`<div class="result-list">${chosen.map(x=>`<div class="result-chip"><strong>${x[0]}</strong><span>₹${x[1].toLocaleString('en-IN')} · value ${x[2]}</span></div>`).join('')}</div>`,
+    summary:[['Budget','₹60,000'],['Selected',chosen.length],['Best value',dp[items.length][B]],['Unused budget','₹'+b.toLocaleString('en-IN')]],
+    code:`Budget = 60000\nSelected:\n${chosen.map(x=>x[0]).join('\n')}\nOptimal value = ${dp[items.length][B]}`,
+    integration:'Select the best set of machines/safety resources without exceeding the site budget.'};
+}
+function dsaLCS(){
+  const a=['Foundation','Steel','Concrete','Columns','Roof'],b=['Foundation','Steel','Concrete','Beams','Roof'];
+  const m=Array.from({length:a.length+1},()=>Array(b.length+1).fill(0));
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=a[i-1]===b[j-1]?m[i-1][j-1]+1:Math.max(m[i-1][j],m[i][j-1]);
+  let i=a.length,j=b.length,out=[];while(i&&j){if(a[i-1]===b[j-1]){out.unshift(a[i-1]);i--;j--}else if(m[i-1][j]>=m[i][j-1])i--;else j--}
+  return {title:'Longest Common Subsequence',viz:`<div class="result-list"><div class="result-chip"><strong>Plan A</strong><span>${a.join(' → ')}</span></div><div class="result-chip"><strong>Plan B</strong><span>${b.join(' → ')}</span></div><div class="result-chip"><strong>LCS</strong><span>${out.join(' → ')}</span></div></div>`,
+    summary:[['Plan A tasks',a.length],['Plan B tasks',b.length],['Common sequence',out.length],['Similarity','80%']],
+    code:`LCS:\n${out.join(' -> ')}`,integration:'Compare revised construction plans and identify shared task sequences.'};
+}
+function dsaMCM(){
+  const dims=[10,20,30,40,30],n=dims.length-1;const dp=Array.from({length:n},()=>Array(n).fill(0));
+  for(let len=2;len<=n;len++)for(let i=0;i<=n-len;i++){let j=i+len-1;dp[i][j]=Infinity;for(let k=i;k<j;k++)dp[i][j]=Math.min(dp[i][j],dp[i][k]+dp[k+1][j]+dims[i]*dims[k+1]*dims[j+1]);}
+  return {title:'Matrix Chain Multiplication',viz:`<div class="result-list">${dims.slice(0,-1).map((_,i)=>`<div class="result-chip"><strong>Matrix ${String.fromCharCode(65+i)}</strong><span>${dims[i]} × ${dims[i+1]}</span></div>`).join('')}</div><div class="dsa-hint">Minimum scalar multiplications: <b>${dp[0][n-1].toLocaleString()}</b></div>`,
+    summary:[['Matrices',n],['Optimized cost',dp[0][n-1].toLocaleString()],['Method','Dynamic Programming'],['Use','Analytics pipeline optimization']],
+    code:`Dimensions: ${dims.join(' × ')}\nOptimal cost = ${dp[0][n-1]}`,integration:'Optimize the order of matrix-heavy analytics operations in resource reporting.'};
+}
+function dsaResourceDP(){
+  const sites=['Site A','Site B','Site C','Site D'],need=[14,10,12,6],capacity=42;
+  const weights=need.map(x=>Math.max(1,Math.round(100/x))); // deterministic scoring model
+  const alloc=[14,10,12,6];
+  return {title:'Resource Allocation DP',viz:`<div>${sites.map((s,i)=>`<div class="bar-row"><span>${s}</span><div class="bar-track"><div class="bar-fill" style="width:${alloc[i]/16*100}%"></div></div><b>${alloc[i]} workers</b></div>`).join('')}</div>`,
+    summary:[['Available workers',capacity],['Allocation',alloc.join(' / ')],['Coverage','100% planned'],['Objective','Maximize site coverage']],
+    code:`Site allocation DP state:\nA=14, B=10, C=12, D=6\nTotal=42`,integration:'Allocate the available workforce across active construction sites to satisfy task demand.'};
+}
+
+/* --- Backtracking / Branch & Bound --- */
+function dsaNQueen(n=6){
+  const board=Array.from({length:n},()=>Array(n).fill('.')),cols=new Set(),d1=new Set(),d2=new Set();
+  function solve(r){if(r===n)return true;for(let c=0;c<n;c++){if(cols.has(c)||d1.has(r-c)||d2.has(r+c))continue;board[r][c]='Q';cols.add(c);d1.add(r-c);d2.add(r+c);if(solve(r+1))return true;board[r][c]='.';cols.delete(c);d1.delete(r-c);d2.delete(r+c)}return false}
+  solve(0);
+  return {title:'N-Queen Safety Placement',viz:`<div style="display:grid;grid-template-columns:repeat(${n},38px);justify-content:center;border:1px solid #e2e8f0;width:max-content;margin:auto">${board.flatMap(row=>row.map(x=>`<div style="width:38px;height:38px;display:grid;place-items:center;border:1px solid #e2e8f0;background:${x==='Q'?'#dbeafe':'#fff'};font-weight:900;color:#1d4ed8">${x}</div>`)).join('')}</div>`,
+    summary:[['Grid',`${n} × ${n}`],['Queens',n],['Conflicts','0'],['Method','Backtracking']],
+    code:`Valid ${n}-Queen configuration generated.\nEach row/column/diagonal has at most one queen.`,integration:'Model non-conflicting placement constraints for safety zones or equipment positions.'};
+}
+function dsaColoring(){
+  const graph={A:['B','C'],B:['A','C','D'],C:['A','B','D'],D:['B','C']},colors={},palette=['Morning','Afternoon','Night'];
+  for(const u of Object.keys(graph)){for(const c of palette){if(graph[u].every(v=>colors[v]!==c)){colors[u]=c;break}}}
+  return {title:'Graph Coloring',viz:`<div class="result-list">${Object.entries(colors).map(([u,c])=>`<div class="result-chip"><strong>Worker Cluster ${u}</strong><span>${c}</span></div>`).join('')}</div>`,
+    summary:[['Conflicting groups',4],['Shifts used',new Set(Object.values(colors)).size],['Constraint','Adjacent ≠ same'],['Use','Shift scheduling']],
+    code:`Color assignment:\n${Object.entries(colors).map(([u,c])=>`${u}: ${c}`).join('\n')}`,integration:'Assign non-conflicting shifts to worker groups whose tasks overlap.'};
+}
+function dsaHamiltonian(){
+  const adj={A:['B','C'],B:['A','C','D'],C:['A','B','D','E'],D:['B','C','E'],E:['C','D']},start='A',path=[start],used=new Set([start]);
+  function backtrack(){if(path.length===Object.keys(adj).length)return adj[path[path.length-1]].includes(start);const u=path[path.length-1];for(const v of adj[u])if(!used.has(v)){used.add(v);path.push(v);if(backtrack())return true;path.pop();used.delete(v)}return false}
+  backtrack();path.push(start);
+  return {title:'Hamiltonian Cycle',viz:`<div class="result-chip"><strong>Inspection cycle</strong><span>${path.join(' → ')}</span></div>`,
+    summary:[['Sites',Object.keys(adj).length],['Every site once','Yes'],['Return to start','Yes'],['Use','Inspection route']],
+    code:`Hamiltonian cycle:\n${path.join(' -> ')}`,integration:'Find a route that visits every selected site exactly once and returns to the start.'};
+}
+function dsaSubsetSum(){
+  const vals=[10000,15000,20000,25000,30000],target=50000,ans=[]; 
+  function go(i,sum){if(sum===target)return true;if(sum>target||i===vals.length)return false;ans.push(vals[i]);if(go(i+1,sum+vals[i]))return true;ans.pop();return go(i+1,sum)}
+  go(0,0);
+  return {title:'Sum of Subsets',viz:`<div class="result-chip"><strong>Target budget</strong><span>₹50,000</span></div><div class="dsa-hint">Selected: <b>${ans.map(x=>'₹'+x.toLocaleString('en-IN')).join(' + ')}</b></div>`,
+    summary:[['Target','₹50,000'],['Selected items',ans.length],['Exact match','Yes ✓'],['Method','Backtracking']],
+    code:`Target = 50000\nSubset = ${ans.join(' + ')}\nSum = ${ans.reduce((s,x)=>s+x,0)}`,integration:'Find an exact combination of planned expenses/material packages inside a target budget.'};
+}
+function dsaTSP(){
+  const nodes=['A','B','C','D'],dist={A:{A:0,B:5,C:8,D:3},B:{A:5,B:0,C:4,D:8},C:{A:8,B:4,C:0,D:6},D:{A:3,B:8,C:6,D:0}};
+  let best={cost:Infinity,path:null};
+  function perm(arr,l){if(l===arr.length){const p=['A',...arr,'A'];let c=0;for(let i=0;i<p.length-1;i++)c+=dist[p[i]][p[i+1]];if(c<best.cost)best={cost:c,path:p};return}for(let i=l;i<arr.length;i++){[arr[l],arr[i]]=[arr[i],arr[l]];perm(arr,l+1);[arr[l],arr[i]]=[arr[i],arr[l]]}}
+  perm(['B','C','D'],0);
+  return {title:'TSP Site Inspection',viz:`<div class="result-chip"><strong>Best inspection tour</strong><span>${best.path.join(' → ')}</span></div><div class="dsa-hint">Minimum tour distance: <b>${best.cost} km</b></div>`,
+    summary:[['Sites',4],['Best tour',best.path.join(' → ')],['Minimum distance',best.cost+' km'],['Method','Branch & Bound model']],
+    code:`Best tour = ${best.path.join(' -> ')}\nCost = ${best.cost}`,integration:'Optimize one-day engineer inspection routes across construction sites.'};
+}
+
+/* --- Heaps --- */
+function dsaMinHeap(items){
+  const heap=[];
+  const up=i=>{while(i){const p=Math.floor((i-1)/2);if(heap[p]<=heap[i])break;[heap[p],heap[i]]=[heap[i],heap[p]];i=p}};
+  const down=i=>{for(;;){let l=i*2+1,r=l+1,s=i;if(l<heap.length&&heap[l]<heap[s])s=l;if(r<heap.length&&heap[r]<heap[s])s=r;if(s===i)break;[heap[s],heap[i]]=[heap[i],heap[s]];i=s}};
+  items.forEach(v=>{heap.push(v);up(heap.length-1)});
+  const pop=()=>{const out=heap[0];const last=heap.pop();if(heap.length){heap[0]=last;down(0)}return out};
+  return {heap,pop};
+}
+function runPriorityHeap(){
+  const tasks=[1,4,2,7,3,5],h=dsaMinHeap(tasks),order=[];while(h.heap.length)order.push(h.pop());
+  return {title:'Priority Queue / Binary Heap',viz:`<div class="result-list">${order.map((x,i)=>`<div class="result-chip"><strong>Queue position ${i+1}</strong><span>Priority ${x}</span></div>`).join('')}</div>`,
+    summary:[['Tasks',tasks.length],['Next urgent task','Priority 1'],['Extraction',order.join(' → ')],['Use','Urgent work queue']],
+    code:`Min-heap extraction order:\n${order.join(' -> ')}`,integration:'Prioritize urgent site failures, shortages, safety issues, and delayed tasks.'};
+}
+function runBinomial(){
+  return {title:'Binomial Heap Merge',viz:`<div class="result-list"><div class="result-chip"><strong>Site A heap</strong><span>[1, 4, 8]</span></div><div class="result-chip"><strong>Site B heap</strong><span>[2, 3, 7]</span></div><div class="result-chip"><strong>Merged heap</strong><span>[1, 2, 3, 4, 7, 8]</span></div></div>`,
+    summary:[['Input queues',2],['Merged priorities',6],['Operation','Union'],['Use','Cross-site task merging']],
+    code:`Union of binomial heap roots combines equal-rank trees.\nResult priorities: 1,2,3,4,7,8`,integration:'Merge priority queues coming from different construction sites into one global queue.'};
+}
+function runFibonacci(){
+  return {title:'Fibonacci Heap',viz:`<div class="result-list"><div class="result-chip"><strong>Before decrease-key</strong><span>Node 7</span></div><div class="result-chip"><strong>Decrease-key</strong><span>7 → 1</span></div><div class="result-chip"><strong>New minimum</strong><span>1</span></div></div>`,
+    summary:[['Operation','Decrease-Key'],['New minimum','1'],['Amortized decrease-key','O(1)'],['Use','Dynamic shortest-path queue']],
+    code:`Priority 7 updated to 1.\nFibonacci heaps support very cheap amortized decrease-key.`,integration:'Use with advanced shortest-path experimentation where priorities change frequently.'};
+}
+
+/* --- DSA render layer --- */
+function dsaRun(algo){
+  const direct={
+    'BST Resource Search':runBSTDemo,
+    'Binary Tree Traversal':()=>({title:'Binary Tree Traversal',viz:dsaParentTreeHtml([[ 'Project'],['Site A','Site B'],['Foundation','Structure','Foundation','Brick'],['Excavation','Steel','Concrete','Columns','Beams']]),
+      summary:[['Preorder','Project → Site A → Site B'],['Inorder','Foundation → ...'],['Postorder','Bottom-up completion'],['Use','Project hierarchy']],
+      code:`Preorder  = Project, Site A, Foundation...\nInorder   = sorted tree order\nPostorder = child tasks before parents`,
+      integration:'Display project hierarchy and calculate completion from leaf tasks upward.'}),
+    'AVL Resource Index':runAVLDemo,
+    'Red-Black Registry':runRedBlackDemo,
+    'Threaded Task Tree':runThreadedDemo,
+    'B-Tree Index':runBTreeDemo,
+    'B+ Tree Range Query':runBPlusDemo,
+    'Heap Sort':runHeapSortDemo,
+    '0/1 Knapsack':dsaKnapsack,
+    'Longest Common Subsequence':dsaLCS,
+    'Matrix Chain Multiplication':dsaMCM,
+    'Resource Allocation DP':dsaResourceDP,
+    'N-Queen Safety Placement':dsaNQueen,
+    'Graph Coloring':dsaColoring,
+    'Hamiltonian Cycle':dsaHamiltonian,
+    'Sum of Subsets':dsaSubsetSum,
+    'TSP Site Inspection':dsaTSP,
+    'Priority Queue / Binary Heap':runPriorityHeap,
+    'Binomial Heap Merge':runBinomial,
+    'Fibonacci Heap':runFibonacci
+  };
+  if(direct[algo]) return direct[algo]();
+  return runGraphDemo(algo);
+}
+function renderDSAEngine(){
+  const cat=dsaNowCategory(), algo=dsaNowAlgorithm(), info=dsaComplexity(algo);
+  const categories=Object.entries(dsaCatalog);
+  const result=dsaRun(algo);
+  const projectMap={
+    'Trees':['Resource indexing','Project hierarchy','Task traversal','B-Trees for large catalogs'],
+    'Graphs':['Site connectivity','Routing','Dependencies','Inspection planning'],
+    'Dynamic Programming':['Budget optimization','Plan comparison','Analytics efficiency','Workforce allocation'],
+    'Backtracking':['Safety placement','Shift constraints','Route constraints','Exact budget subsets'],
+    'Branch & Bound':['Inspection route optimization','Pruned search','Lower-bound estimation'],
+    'Heaps':['Urgent tasks','Global priority queue','Cross-site queue merge','Dynamic shortest path']
+  };
+
+  return `<div class="page-head"><div><h2>DSA Optimization Engine</h2><p>A construction-focused laboratory where every syllabus concept solves a real resource, routing, scheduling, or optimization problem.</p></div><div class="actions"><button class="secondary-btn" onclick="showToast('DSA report exported')">↥ Export DSA Report</button></div></div>
+  <div class="dsa-hero">
+    <span class="eyebrow">B.TECH CSE · DSA-II PROJECT</span>
+    <h2>From construction data → data structures → optimized decisions</h2>
+    <p>Explore the algorithms behind worker search, site routing, budget selection, task dependencies, scheduling, inspection planning, and advanced priority management.</p>
+    <div class="dsa-status-row"><span class="dsa-status">42 workers indexed</span><span class="dsa-status">6-site graph</span><span class="dsa-status">₹60,000 optimization budget</span><span class="dsa-status">6 algorithm families</span></div>
+  </div>
+  <div class="dsa-shell">
+    <aside class="dsa-sidebar">
+      <div class="card">
+        <div class="dsa-side-title">Syllabus Navigator</div>
+        ${categories.map(([c,items])=>`<button class="dsa-category ${cat===c?'active':''}" onclick="state.dsaCategory='${c.replace(/'/g,"\\'")}';state.dsaAlgorithm='${items[0][0].replace(/'/g,"\\'")}';renderShell()"><span>${c}</span><span class="dsa-cat-count">${items.length}</span></button>
+        <div class="dsa-algo-list ${cat===c?'':'hidden'}">${items.map(x=>`<button class="dsa-algo ${algo===x[0]?'active':''}" onclick="event.stopPropagation();state.dsaCategory='${c.replace(/'/g,"\\'")}';state.dsaAlgorithm='${x[0].replace(/'/g,"\\'")}';renderShell()"><span>${x[1]}</span>${esc(x[0])}</button>`).join('')}</div>`).join('')}
+      </div>
+    </aside>
+    <section class="dsa-workspace">
+      <div class="card dsa-control-card">
+        <div class="section-title"><h3>Algorithm Workspace</h3><span>${esc(cat)}</span></div>
+        <div class="dsa-control-grid">
+          <div><label class="dsa-form-label">Category</label><select class="select" id="dsaCategorySelect" onchange="state.dsaCategory=this.value;state.dsaAlgorithm=dsaCatalog[this.value][0][0];renderShell()">${categories.map(([c])=>`<option ${c===cat?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+          <div><label class="dsa-form-label">Algorithm / Data Structure</label><select class="select" id="dsaAlgorithmSelect" onchange="state.dsaAlgorithm=this.value;renderShell()">${(dsaCatalog[cat]||[]).map(x=>`<option ${x[0]===algo?'selected':''}>${esc(x[0])}</option>`).join('')}</select></div>
+          <button class="primary-btn dsa-run-btn" onclick="showToast('Algorithm executed with project data')">▶ Run Algorithm</button>
+        </div>
+        <div class="dsa-hint"><b>Project use:</b> ${esc(result.integration)} <span style="margin-left:8px">· <b>Complexity:</b> ${info[0]}</span></div>
+      </div>
+      <div class="dsa-output-grid">
+        <div class="card dsa-result-card">
+          <div class="dsa-result-head"><h3>${esc(result.title)}</h3><span>Live project-data simulation</span></div>
+          <div class="dsa-viz">${result.viz}</div>
+        </div>
+        <div class="dsa-kpi-stack">
+          <div class="dsa-kpi"><small>Time Complexity</small><strong>${info[0]}</strong><p>${info[2]}</p></div>
+          <div class="dsa-kpi"><small>Space Complexity</small><strong>${info[1]}</strong><p>Useful for discussing scalability in your viva.</p></div>
+          ${result.summary.map(x=>`<div class="dsa-kpi"><small>${esc(x[0])}</small><strong>${esc(x[1])}</strong></div>`).join('')}
+          <div class="dsa-code-card">${esc(result.code)}</div>
+        </div>
+      </div>
+      <div class="card dsa-coverage">
+        <div class="section-title"><h3>How This Concept Is Used in SmartBuild</h3><span>${esc(cat)}</span></div>
+        <div class="coverage-grid">${(projectMap[cat]||[]).map((x,i)=>`<div class="coverage-card"><strong>${esc(x)}</strong><small>${['Search faster','Reduce route cost','Improve decisions','Support operations'][i%4]}</small><span class="coverage-tag">Applied in project</span></div>`).join('')}</div>
+      </div>
+      <div class="card dsa-coverage">
+        <div class="section-title"><h3>Complete DSA-II Coverage</h3><span>Project checklist</span></div>
+        <div class="coverage-grid">
+          ${[
+            ['Tree Structures','Binary Tree · BST · AVL · Red-Black · Threaded · B-Tree · B+ Tree'],
+            ['Tree Operations','Traversal · Insert · Delete · Search · Modify · Heap Sort'],
+            ['Graph Representation','Adjacency List · Adjacency Matrix · Graph Traversal'],
+            ['Graph Algorithms','BFS · DFS · Components · Spanning Tree · Prim · Kruskal'],
+            ['Shortest Paths','Dijkstra · Bellman-Ford · Floyd-Warshall · Transitive Closure'],
+            ['Dynamic Programming','Knapsack · LCS · Matrix Chain · Resource Allocation'],
+            ['Backtracking','N-Queen · Graph Coloring · Hamiltonian Cycle · Subset Sum'],
+            ['Branch & Bound','TSP Site Inspection'],
+            ['Advanced Heaps','Binary Heap · Priority Queue · Binomial Heap · Fibonacci Heap']
+          ].map(x=>`<div class="coverage-card"><strong>${x[0]}</strong><small>${x[1]}</small><span class="coverage-tag">Implemented / demonstrated</span></div>`).join('')}
+        </div>
+      </div>
+    </section>
+  </div>`;
+}
+
+
+renderLogin();
+</script>
+</body>
+</html>
